@@ -12,10 +12,6 @@ stages:
   - test
   - build
 
-before_script:
-  - make prepare-dev
-  - make dep
-
 build_development:
   stage: build
   script:
