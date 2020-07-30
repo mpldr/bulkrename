@@ -11,4 +11,4 @@ coveralls:
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/mattn/goveralls
 	go test -v -covermode=count -coverprofile=coverage.out
-	$(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=coverage.out -repotoken $COVERALLS_TOKEN
+	$(shell go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=coverage.out -repotoken ${COVERALLS_TOKEN}
