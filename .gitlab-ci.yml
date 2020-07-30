@@ -26,7 +26,6 @@ testing:
   stage: test
   script: 
     - make test
-    - make race
 
 merge_test:
   stage: test

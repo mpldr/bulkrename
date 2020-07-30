@@ -4,6 +4,9 @@ GOOS := $(shell go tool dist banner | head -2 | tail -1 | sed -r 's/[^/]* ([a-z0
 build:
 	go build -ldflags="-s -w -X main.buildVersion=${VERSION}"
 
+test:
+	go test -v -cover
+
 coveralls:
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/mattn/goveralls
