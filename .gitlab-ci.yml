@@ -1,0 +1,36 @@
+image: golang:latest
+
+cache:
+  paths:
+    - /apt-cache
+    - /go/src/github.com
+    - /go/src/golang.org
+    - /go/src/google.golang.org
+    - /go/src/gopkg.in
+
+stages:
+  - test
+  - build
+
+build_development:
+  stage: build
+  script:
+    - env GOOS=linux GOARCH=amd64 make build
+    - env GOOS=windows GOARCH=amd64 make build
+  artifacts:
+    paths:
+      - bulkrename
+      - bulkrename.exe
+
+testing:
+  stage: test
+  script: 
+    - make test
+
+merge_test:
+  stage: test
+  script: 
+    - make coveralls
+  only:
+    - merge_requests
+
