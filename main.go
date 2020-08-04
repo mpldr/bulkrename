@@ -5,6 +5,8 @@ import (
 	"os"
 
 	cli "github.com/jawher/mow.cli"
+
+	"gitlab.com/poldi1405/bulkrename/plan"
 )
 
 var (
@@ -14,6 +16,7 @@ var (
 	check        *bool
 	mkdir        bool
 	editor       *string
+	args         *[]string
 	overwrite    bool
 	delem        *bool
 	files        *[]string
@@ -25,14 +28,25 @@ func main() {
 	setupCLI(br)
 
 	br.Action = func() {
-		fmt.Printf("recursive: %v\nabsolute: %v\nstop to show: %v\ncreate directories: %v\nuse editor: %v\noverwrite: %v\ndelete empty: %v\nfiles: %v", *recursive, *absolute, *check, mkdir, *editor, overwrite, *delem, *files)
+		jobplan := plan.NewPlan()
+
+		jobplan.AbsolutePaths = *absolute
+		jobplan.Overwrite = overwrite
+		jobplan.Editor = *editor
+		jobplan.EditorArgs = *args
+		jobplan.CreateDirs = mkdir
+		jobplan.StopToShow = *check
+		jobplan.DeleteEmpty = *delem
+
+		listFiles(jobplan, *files, *recursive)
+		fmt.Printf("recursive: %v\nabsolute: %v\nstop to show: %v\ncreate directories: %v\nuse editor: %v\narguemnts: %v\noverwrite: %v\ndelete empty: %v\nfiles: %v", *recursive, *absolute, *check, mkdir, *editor, *args, overwrite, *delem, *files)
 	}
 	br.Run(os.Args)
 }
 
 func setupCLI(br *cli.Cli) {
 	br.Version("v version", "bulkrename "+buildVersion)
-	br.Spec = "[-r] [-a] [--editor] [--check] [--no-mkdir] [--no-overwrite] FILES..."
+	br.Spec = "[-r] [-a] [--editor] [--arg] [--check] [--no-mkdir] [--no-overwrite] FILES..."
 
 	recursive = br.Bool(cli.BoolOpt{
 		Name:   "r recursive",
@@ -78,6 +92,12 @@ func setupCLI(br *cli.Cli) {
 		Desc:   "executable of the editor",
 		Value:  DefaultEditor,
 		EnvVar: "EDITOR",
+	})
+
+	args = br.Strings(cli.StringsOpt{
+		Name:  "arg",
+		Desc:  "arguments for the editor",
+		Value: []string{"{}"},
 	})
 
 	files = br.Strings(cli.StringsArg{

@@ -1,7 +1,7 @@
 package plan
 
 import (
-	"encoding/hex"
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -20,6 +20,8 @@ type Plan struct {
 	Overwrite bool
 	// Editor contains the Editor to use for editing
 	Editor string
+	// EditorArgs contains the arguments that will be passed to the editor. {} will be replaced by the absolute path to the plan-file.
+	EditorArgs []string
 	// CreateDirs indicates whether non-existant directories should be created as needed
 	CreateDirs bool
 	// StopToShow indicates whether an overview of the applied actions should be shown and confirmation requested
@@ -31,10 +33,10 @@ type Plan struct {
 // NewPlan returns a pointer to a new Plan
 func NewPlan() *Plan {
 	return &Plan{
-		TempID: hex.EncodeToString(rand.Read([8]byte)),
+		TempID: fmt.Sprintf("%X", rand.Uint64()),
 	}
 }
 
 func init() {
-	rand.Seed(time.Now().Nanosecond())
+	rand.Seed(time.Since(time.Now()).Nanoseconds())
 }
