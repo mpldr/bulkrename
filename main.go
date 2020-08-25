@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 
 	cli "github.com/jawher/mow.cli"
 
 	"gitlab.com/poldi1405/bulkrename/plan"
+	"gitlab.com/poldi1405/go-ansi"
 )
 
 var (
@@ -38,15 +40,55 @@ func main() {
 		jobplan.StopToShow = *check
 		jobplan.DeleteEmpty = *delem
 
-		listFiles(jobplan, *files, *recursive)
-		fmt.Printf("recursive: %v\nabsolute: %v\nstop to show: %v\ncreate directories: %v\nuse editor: %v\narguemnts: %v\noverwrite: %v\ndelete empty: %v\nfiles: %v", *recursive, *absolute, *check, mkdir, *editor, *args, overwrite, *delem, *files)
+		*files = RemoveInvalidEntries(*files)
+		jobplan.LoadFileList(*files, *recursive)
+		err := jobplan.StartEditing()
+		if err != nil {
+			os.Exit(1)
+		}
+
+		err = jobplan.PrepareExecution()
+		if err != nil {
+			os.Exit(1)
+		}
+
+		if jobplan.StopToShow {
+			jobplan.PreviewPlan()
+			fmt.Print("\nDo you wish to continue? [Y/n] ")
+			reader := bufio.NewReader(os.Stdin)
+			char, _, err := reader.ReadRune()
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			switch char {
+			case 'n', 'N':
+				os.Exit(0)
+			}
+		}
+
+		errOcc, msgs, errs := jobplan.Execute()
+		if errOcc {
+			fmt.Print(ansi.Bold(ansi.Red("ERROR!")), "\nThe following errors occures while executing the plan:\n\n")
+
+			for i, msg := range msgs {
+				fmt.Println(msg, errs[i])
+			}
+			os.Exit(1)
+		}
+
+		//fmt.Println(jobplan.InFiles)
+		//fmt.Printf("recursive: %v\nabsolute: %v\nstop to show: %v\ncreate directories: %v\nuse editor: %v\narguemnts: %v\noverwrite: %v\ndelete empty: %v\nfiles: %v", *recursive, *absolute, *check, mkdir, *editor, *args, overwrite, *delem, *files)
 	}
-	br.Run(os.Args)
+	err := br.Run(os.Args)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func setupCLI(br *cli.Cli) {
 	br.Version("v version", "bulkrename "+buildVersion)
-	br.Spec = "[-r] [-a] [--editor] [--arg] [--check] [--no-mkdir] [--no-overwrite] FILES..."
+	br.Spec = "[-r] [-a] [-d] [--editor] [--arg...] [--check] [--no-mkdir] [--no-overwrite] FILES..."
 
 	recursive = br.Bool(cli.BoolOpt{
 		Name:   "r recursive",

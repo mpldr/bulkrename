@@ -4,6 +4,11 @@ GOOS := $(shell go tool dist banner | head -2 | tail -1 | sed -r 's/[^/]* ([a-z0
 build:
 	go build -ldflags="-s -w -X main.buildVersion=${VERSION}"
 
+check:
+	gocyclo -over 15 -avg .
+	golint -set_exit_status ./...
+
+
 test:
 	go test -v -cover
 
