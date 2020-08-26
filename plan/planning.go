@@ -53,12 +53,13 @@ func (p *Plan) PrepareExecution() error {
 
 	for _, job := range p.jobs {
 		f, err := os.Open(job.SourcePath)
-		f.Close()
 		if err != nil {
+			f.Close()
 			return err
 		}
 
 		fi, err := f.Stat()
+		f.Close()
 		if err != nil {
 			return err
 		}
@@ -72,15 +73,17 @@ func (p *Plan) PrepareExecution() error {
 
 			// if the containing folder doesn't exist, create it
 			d, err := os.Open(dir)
-			defer d.Close()
 			if os.IsNotExist(err) && p.CreateDirs {
 				prerules = append(prerules, JobDescriptor{Action: 2, DstPath: dir + string(os.PathSeparator)})
+				d.Close()
 				continue
 			} else if err != nil {
+				d.Close()
 				return err
 			}
 
 			dfi, err := d.Stat()
+			d.Close()
 			if err != nil {
 				continue
 			}
