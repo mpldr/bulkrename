@@ -1,9 +1,14 @@
 package plan
 
 import (
-	"encoding/hex"
+	"fmt"
 	"math/rand"
+	"os"
+	"strings"
+	"sync"
 	"time"
+
+	. "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
 )
 
 type Plan struct {
@@ -20,21 +25,81 @@ type Plan struct {
 	Overwrite bool
 	// Editor contains the Editor to use for editing
 	Editor string
+	// EditorArgs contains the arguments that will be passed to the editor. {} will be replaced by the absolute path to the plan-file.
+	EditorArgs []string
 	// CreateDirs indicates whether non-existant directories should be created as needed
 	CreateDirs bool
 	// StopToShow indicates whether an overview of the applied actions should be shown and confirmation requested
 	StopToShow bool
 	// DeleteEmpty indicates whether files corresponding with empty lines should be deleted
 	DeleteEmpty bool
+
+	// inFilesMtx is a Mutex to ensure that there are no issues when appending to the filelist
+	inFilesMtx sync.Mutex
+	// jobs contains the tasks that have to be executed in order for the target state to be reached
+	jobs []JobDescriptor
 }
 
 // NewPlan returns a pointer to a new Plan
 func NewPlan() *Plan {
 	return &Plan{
-		TempID: hex.EncodeToString(rand.Read([8]byte)),
+		TempID: fmt.Sprintf("%X", rand.Uint64()),
 	}
 }
 
+func (p *Plan) GetFileList() []string {
+	pwd, err := os.Getwd()
+	if err != nil {
+		pwd = ""
+	}
+
+	if pwd != "" && !p.AbsolutePaths {
+		var result []string
+		for _, path := range p.InFiles {
+			result = append(result, strings.TrimPrefix(path, pwd+string(os.PathSeparator)))
+		}
+		return result
+	}
+
+	return p.InFiles
+}
+
+func (p *Plan) TempFile() string {
+	return os.TempDir() + string(os.PathSeparator) + "br_" + p.TempID
+}
+
 func init() {
-	rand.Seed(time.Now().Nanosecond())
+	rand.Seed(time.Since(time.Now()).Nanoseconds())
+}
+
+func (p *Plan) Execute() (errOccured bool, errorDescs []string, errs []error) {
+	for _, job := range p.jobs {
+		switch job.Action {
+		case -1:
+			err := os.Remove(job.SourcePath)
+			if err != nil {
+				errOccured = true
+				errorDescs = append(errorDescs, "Error while deleting "+job.SourcePath)
+				errs = append(errs, err)
+				continue
+			}
+		case 1:
+			err := os.Rename(job.SourcePath, job.DstPath)
+			if err != nil {
+				errOccured = true
+				errorDescs = append(errorDescs, "Error while moving "+job.SourcePath+" to "+job.DstPath)
+				errs = append(errs, err)
+				continue
+			}
+		case 2:
+			err := os.MkdirAll(job.DstPath, 0777)
+			if err != nil {
+				errOccured = true
+				errorDescs = append(errorDescs, "Error while creating "+job.SourcePath)
+				errs = append(errs, err)
+				continue
+			}
+		}
+	}
+	return
 }

@@ -9,12 +9,12 @@ import (
 
 func TestCLISetup(t *T) {
 	validCalls := [][]string{
-		[]string{"jt", "abc", "def", "ghi"},
-		[]string{"jt", "-r", "-a", "Makefile"},
-		[]string{"jt", "-r", "Makefile"},
-		[]string{"jt", "--editor", "word.exe", "Makefile"},
-		[]string{"jt", "--editor", "word.exe", "-a", "Makefile"},
-		[]string{"jt", "--check", "--no-mkdir", "--no-overwrite", "Makefile"},
+		{"jt", "abc", "def", "ghi"},
+		{"jt", "-r", "-a", "Makefile"},
+		{"jt", "-r", "Makefile"},
+		{"jt", "--editor", "word.exe", "Makefile"},
+		{"jt", "--editor", "word.exe", "-a", "Makefile"},
+		{"jt", "--check", "--no-mkdir", "--no-overwrite", "Makefile"},
 	}
 	/*invalidCalls := [][]string{
 		[]string{"jt"},
