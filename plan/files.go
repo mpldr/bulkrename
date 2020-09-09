@@ -2,12 +2,13 @@ package plan
 
 import (
 	"fmt"
-	"gitlab.com/poldi1405/go-ansi"
 	"os"
 	"path/filepath"
 	"sort"
 	"sync"
 	"time"
+
+	"gitlab.com/poldi1405/go-ansi"
 )
 
 func (p *Plan) LoadFileList(files []string, recursive bool) {
@@ -68,6 +69,7 @@ func (p *Plan) LoadFileList(files []string, recursive bool) {
 	p.inFilesMtx.Unlock()
 }
 
+// TODO: implement function
 func (p *Plan) listAllFiles(start string) error {
 	var done bool
 
@@ -81,13 +83,20 @@ func (p *Plan) listAllFiles(start string) error {
 	}()
 	var files []string
 
-	err := filepath.Walk(start, func(path string, info os.FileInfo, err error) error {
-		files = append(files, filepath.Clean(path))
-		return nil
-	})
-	if err != nil {
+	fileList := make([]string, 0)
+	e := filepath.Walk(start, func(path string, f os.FileInfo, err error) error {
+		fileList = append(fileList, path)
 		return err
+	})
+
+	if e != nil {
+		panic(e)
 	}
+
+	for _, file := range fileList {
+		fmt.Println(file)
+	}
+
 	done = true
 
 	p.inFilesMtx.Lock()

@@ -1,8 +1,12 @@
 VERSION := $(shell git describe --always --long --dirty)
-GOOS := $(shell go tool dist banner | head -2 | tail -1 | sed -r 's/[^/]* ([a-z0-9]+)\/[A-Za-z0-9 \/]*/\1/')
+GOOS := $(shell go tool dist env | env grep "^GOOS" | env sed 's/[^"]*"\([^"]*\)"/\1/')
 
 build:
-	go build -ldflags="-s -w -X main.buildVersion=${VERSION}"
+ifeq (${GOOS}, windows)
+	go build -ldflags="-s -w -X main.buildVersion=${VERSION}" -trimpath -buildmode=pie -o br.exe
+else
+	go build -ldflags="-s -w -X main.buildVersion=${VERSION}" -trimpath -buildmode=pie -o br
+endif
 
 check:
 	gocyclo -over 15 -avg .
