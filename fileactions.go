@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"gitlab.com/poldi1405/go-ansi"
+	"gitlab.com/poldi1405/bulkrename/plan"
 )
 
 // RemoveInvalidEntries checks every entry in files and removes it if there is an issue accessing it. Additionally an error message with additional information is shown.
@@ -27,4 +29,44 @@ func RemoveInvalidEntries(files []string) []string {
 		}
 	}
 	return files
+}
+
+func listFiles(p *plan.Plan, files []string, recursive bool) {
+	if p.AbsolutePaths {
+		pwd, err := os.Getwd()
+		if err != nil {
+			fmt.Println("\033[33m\033[1mWARNING!\033[0m Unable to determine current directory. Defaulting to relative paths")
+		} else {
+			for i := range files {
+				files[i] = pwd + string(os.PathSeparator) + files[i]
+			}
+		}
+	}
+
+	if recursive {
+		for _, v := range files {
+			listAllFiles(v)
+		}
+	}
+
+	p.InFiles = files
+	fmt.Println(p.InFiles)
+}
+
+func listAllFiles(path string) []string {
+	var result []string
+	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			fmt.Printf("Directory %s found\n", path+"/")
+			result = append(result, listAllFiles(path+string(os.PathSeparator)+info.Name())...)
+		} else {
+			fmt.Printf("File %s found\n", path)
+			result = append(result, info.Name())
+		}
+		return nil
+	})
+	return result
 }
