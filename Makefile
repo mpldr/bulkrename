@@ -3,7 +3,7 @@ GOOS := $(shell go tool dist banner | head -2 | tail -1 | sed -r 's/[^/]* ([a-z0
 OUTFILE := $(shell if [ ${GOOS} == "windows" ]; then echo "br.exe"; else echo "br"; fi)
 
 build:
-	go build -ldflags="-s -w -X main.buildVersion=${VERSION}" -o "${OUTFILE}" -buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw
+	go build -ldflags="-s -w -X main.buildVersion=${VERSION}" -o "${OUTFILE}" -buildmode=pie -trimpath -mod=readonly -modcacherw
 
 check:
 	gocyclo -over 15 -avg .
