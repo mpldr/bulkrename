@@ -12,22 +12,29 @@ import (
 // RemoveInvalidEntries checks every entry in files and removes it if there is an issue accessing it. Additionally an error message with additional information is shown.
 func RemoveInvalidEntries(files []string) []string {
 	for i, file := range files {
+		l.Debug("trying file", file)
 		_, err := os.Stat(file)
 		if os.IsNotExist(err) {
-			fmt.Printf(ansi.Red("ERROR!")+" Unable to find %v\n", file)
+			l.Error(fmt.Sprintf("File %v does not exist", file))
+			l.Trace("Error:", err)
 		} else if os.IsPermission(err) {
-			fmt.Printf("%v Unable to access %v\n", ansi.Red("ERROR!"), file)
+			l.Error(fmt.Sprintf("Access to %v denied", file))
+			l.Trace("Error:", err)
 		} else if os.IsTimeout(err) {
-			fmt.Printf("%v Timeout while trying to access %v\n", ansi.Red("ERROR!"), file)
+			l.Error("Timeout while accessing", file)
+			l.Trace("Error:", err)
 		} else if err != nil {
-			fmt.Printf("%v An unknown error occured while trying to find %v. Error: %v\n", ansi.Red("ERROR!"), file, err)
+			l.Error("Error while accessing File")
+			l.Trace("Error:", err)
 		}
 		if err != nil {
+			l.Debug("an error occured, removing file from list")
 			// switch with last element and remove the last
 			files[i] = files[len(files)-1]
 			files = files[:len(files)-1]
 		}
 	}
+	l.Trace("Complete list of files:", files)
 	return files
 }
 

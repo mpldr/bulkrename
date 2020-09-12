@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mborders/logmatic"
 	. "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
 )
 
@@ -39,6 +40,9 @@ type Plan struct {
 	// jobs contains the tasks that have to be executed in order for the target state to be reached
 	jobs []JobDescriptor
 }
+
+// L contains the Logger used to log stuff
+var L *logmatic.Logger
 
 // NewPlan returns a pointer to a new Plan
 func NewPlan() *Plan {

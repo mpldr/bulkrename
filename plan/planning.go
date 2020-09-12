@@ -14,6 +14,8 @@ import (
 func (p *Plan) CreatePlan(planfile string) error {
 	f, err := os.Open(planfile)
 	if err != nil {
+		L.Error("Unable to open temporary file")
+		L.Trace("Error:", err)
 		return err
 	}
 	defer f.Close()
@@ -23,10 +25,14 @@ func (p *Plan) CreatePlan(planfile string) error {
 
 	for scanner.Scan() {
 		scan := scanner.Text()
+		L.Debug("Read", scan)
 		var path string
 		if scan != "" {
 			path, err = filepath.Abs(scan)
 			if err != nil {
+				L.Error("Unable to get absolute path")
+				L.Trace("Path:", scan)
+				L.Trace("Error:", err)
 				return err
 			}
 		}
@@ -52,15 +58,23 @@ func (p *Plan) PrepareExecution() error {
 	assumeExisting := make(map[string]bool)
 
 	for _, job := range p.jobs {
+		L.Debug("From:", p.SourcePath)
+		L.Debug("To  :", p.DstPath)
 		f, err := os.Open(job.SourcePath)
 		if err != nil {
 			f.Close()
+			L.Error("Cannot access sourcefile")
+			L.Trace("Path:", job.SourcePath)
+			L.Trace("Error:", err)
 			return err
 		}
 
 		fi, err := f.Stat()
 		f.Close()
 		if err != nil {
+			L.Error("Cannot stat sourcefile")
+			L.Trace("Path:", job.SourcePath)
+			L.Trace("Error:", err)
 			return err
 		}
 
@@ -102,17 +116,20 @@ func (p *Plan) PrepareExecution() error {
 				continue
 			}
 
-			data, err := os.Stat(dst)
+			_, err := os.Stat(dst)
 			if os.IsNotExist(err) && p.CreateDirs {
 				prerules = append(prerules, JobDescriptor{Action: 2, DstPath: dst})
-				fmt.Println(dst, "prerule added")
+			} else if os.IsNotExist(err) {
+				L.Error("Destination does not exist")
+				L.Trace("Destination:", dst)
+				L.Trace("Error:", err)
 			} else if err != nil {
-				fmt.Println(dst)
-				fmt.Println(err)
+				L.Error("There is an issue with the destination directory")
+				L.Trace("Destination:", dst)
+				L.Trace("Error:", err)
 				return err
-			} else {
-				fmt.Println("qwaafs", data)
 			}
+			L.Debug("assume that", dst, "does exist from now on")
 			assumeExisting[dst] = true
 		}
 	}

@@ -10,11 +10,11 @@ import (
 
 func (p *Plan) StartEditing() error {
 	if len(p.InFiles) == 0 {
+		L.Info("No files for editing left, so no editing necessary")
 		return nil
 	}
 	err := p.writeTempFile()
 	if err != nil {
-		fmt.Printf("%v Cannot write temporary file!\n\n %v\n", ansi.Red("PANIC!"), err)
 		return err
 	}
 
@@ -29,6 +29,10 @@ func (p *Plan) StartEditing() error {
 	err = c.Run()
 	if err != nil {
 		fmt.Printf(ansi.Red("PANIC!")+" Cannot start editor!\n\tExecutable: %v\n\tArguments: %v\n%v\n\nOutput:\n%v", p.Editor, p.EditorArgs, err)
+		L.Trace("Executable:", p.Editor)
+		L.Trace("Arguments:", p.EditorArgs)
+		L.Trace("Error:", err)
+		L.Fatal("Cannot start editor!")
 		return err
 	}
 
@@ -42,6 +46,7 @@ func (p *Plan) prepareArguments() {
 
 	for i, arg := range p.EditorArgs {
 		if val, found := replace[arg]; found {
+			L.Debug("Replacing", p.EditorArgs[i], "with", val)
 			p.EditorArgs[i] = val
 		}
 	}
