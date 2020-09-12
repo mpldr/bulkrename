@@ -58,8 +58,8 @@ func (p *Plan) PrepareExecution() error {
 	assumeExisting := make(map[string]bool)
 
 	for _, job := range p.jobs {
-		L.Debug("From:", p.SourcePath)
-		L.Debug("To  :", p.DstPath)
+		L.Debug("From:", job.SourcePath)
+		L.Debug("To  :", job.DstPath)
 		f, err := os.Open(job.SourcePath)
 		if err != nil {
 			f.Close()
