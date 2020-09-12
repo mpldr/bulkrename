@@ -2,23 +2,26 @@ package plan
 
 import (
 	"fmt"
-	"gitlab.com/poldi1405/go-ansi"
 	"os"
 	"path/filepath"
 	"sort"
 	"sync"
 	"time"
+
+	"gitlab.com/poldi1405/go-ansi"
 )
+
+var wg sync.WaitGroup
 
 func (p *Plan) LoadFileList(files []string, recursive bool) {
 	if recursive {
-		var wg sync.WaitGroup
 		for _, path := range files {
 			abspath, err := filepath.Abs(path)
 			if err != nil {
 				fmt.Printf("%v Unable to get absolute path of %v. %v\n", ansi.Red("ERROR!"), path, err)
 				continue
 			}
+			fmt.Println(abspath)
 
 			s, err := os.Stat(abspath)
 			if err != nil {
@@ -27,13 +30,9 @@ func (p *Plan) LoadFileList(files []string, recursive bool) {
 			}
 
 			if s.IsDir() {
-				go func(pth string) {
-					wg.Add(1)
-					defer wg.Done()
-					if err := p.listAllFiles(pth); err != nil {
-						fmt.Printf("%v Error while scanning paths of %v. %v\n", ansi.Red("ERROR!"), path, err)
-					}
-				}(abspath)
+				fmt.Println("isdir")
+				wg.Add(1)
+				go p.listAllFiles(abspath)
 			} else {
 				p.inFilesMtx.Lock()
 				p.InFiles = append(p.InFiles, filepath.Clean(abspath))
@@ -70,7 +69,9 @@ func (p *Plan) LoadFileList(files []string, recursive bool) {
 
 func (p *Plan) listAllFiles(start string) error {
 	var done bool
+	defer wg.Done()
 
+	fmt.Println("here")
 	go func() {
 		select {
 		case <-time.After(2 * time.Second):

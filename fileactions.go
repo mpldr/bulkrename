@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"gitlab.com/poldi1405/go-ansi"
 	"gitlab.com/poldi1405/bulkrename/plan"
+	"gitlab.com/poldi1405/go-ansi"
 )
 
 // RemoveInvalidEntries checks every entry in files and removes it if there is an issue accessing it. Additionally an error message with additional information is shown.
@@ -57,15 +57,9 @@ func listAllFiles(path string) []string {
 	var result []string
 	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return err
+			fmt.Println(ansi.Red("ERROR!"), err.Error())
 		}
-		if info.IsDir() {
-			fmt.Printf("Directory %s found\n", path+"/")
-			result = append(result, listAllFiles(path+string(os.PathSeparator)+info.Name())...)
-		} else {
-			fmt.Printf("File %s found\n", path)
-			result = append(result, info.Name())
-		}
+		fmt.Printf("File Name: %s\n", info.Name())
 		return nil
 	})
 	return result
