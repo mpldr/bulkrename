@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"gitlab.com/poldi1405/bulkrename/plan"
 	"gitlab.com/poldi1405/go-ansi"
@@ -12,20 +13,20 @@ import (
 // RemoveInvalidEntries checks every entry in files and removes it if there is an issue accessing it. Additionally an error message with additional information is shown.
 func RemoveInvalidEntries(files []string) []string {
 	for i, file := range files {
-		l.Debug("trying file", file)
+		l.Debug("trying file " + file)
 		_, err := os.Stat(file)
 		if os.IsNotExist(err) {
 			l.Error(fmt.Sprintf("File %v does not exist", file))
-			l.Trace("Error:", err)
+			l.Trace("Error: " + err.Error())
 		} else if os.IsPermission(err) {
 			l.Error(fmt.Sprintf("Access to %v denied", file))
-			l.Trace("Error:", err)
+			l.Trace("Error: " + err.Error())
 		} else if os.IsTimeout(err) {
-			l.Error("Timeout while accessing", file)
-			l.Trace("Error:", err)
+			l.Error("Timeout while accessing " + file)
+			l.Trace("Error: " + err.Error())
 		} else if err != nil {
 			l.Error("Error while accessing File")
-			l.Trace("Error:", err)
+			l.Trace("Error: " + err.Error())
 		}
 		if err != nil {
 			l.Debug("an error occured, removing file from list")
@@ -34,7 +35,7 @@ func RemoveInvalidEntries(files []string) []string {
 			files = files[:len(files)-1]
 		}
 	}
-	l.Trace("Complete list of files:", files)
+	l.Trace("Complete list of files:" + strings.Join(files, ":"))
 	return files
 }
 

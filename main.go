@@ -5,6 +5,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	cli "github.com/jawher/mow.cli"
 	"github.com/mborders/logmatic"
@@ -74,19 +76,19 @@ func main() {
 		jobplan := plan.NewPlan()
 
 		jobplan.AbsolutePaths = *absolute
-		l.Debug("set AbsolutePaths to", *absolute)
+		l.Debug("set AbsolutePaths to " + strconv.FormatBool(*absolute))
 		jobplan.Overwrite = overwrite
-		l.Debug("set Overwrite to", overwrite)
+		l.Debug("set Overwrite to " + strconv.FormatBool(overwrite))
 		jobplan.Editor = *editor
-		l.Debug("set Editor to", *editor)
+		l.Debug("set Editor to " + *editor)
 		jobplan.EditorArgs = *args
-		l.Debug("set EditorArgs to", *args)
+		l.Debug("set EditorArgs to " + strings.Join(*args, ", "))
 		jobplan.CreateDirs = mkdir
-		l.Debug("set CreateDirs to", mkdir)
+		l.Debug("set CreateDirs to " + strconv.FormatBool(mkdir))
 		jobplan.StopToShow = *check
-		l.Debug("set StopToShow to", *check)
+		l.Debug("set StopToShow to " + strconv.FormatBool(*check))
 		jobplan.DeleteEmpty = *delem
-		l.Debug("set DeleteEmpty to", *delem)
+		l.Debug("set DeleteEmpty to " + strconv.FormatBool(*delem))
 
 		l.Info("cleaning input")
 		*files = RemoveInvalidEntries(*files)
@@ -95,12 +97,14 @@ func main() {
 		l.Info("starting editor")
 		err := jobplan.StartEditing()
 		if err != nil {
-			l.Fatal("error occured when editing", err)
+			l.Info(err.Error())
+			l.Fatal("error occured when editing")
 		}
 
 		err = jobplan.PrepareExecution()
 		if err != nil {
-			os.Exit(1)
+			l.Info(err.Error())
+			l.Fatal("error occured when preparing execution")
 		}
 
 		if jobplan.StopToShow {
@@ -133,7 +137,8 @@ func main() {
 	}
 	err := br.Run(os.Args)
 	if err != nil {
-		l.Fatal("unable to execute", err)
+		l.Info(err.Error())
+		l.Fatal("unable to execute")
 	}
 }
 

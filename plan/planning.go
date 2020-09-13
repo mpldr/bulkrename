@@ -18,7 +18,8 @@ func (p *Plan) CreatePlan(planfile string) error {
 	f, err := os.Open(planfile)
 	if err != nil {
 		L.Error("Unable to open temporary file")
-		L.Trace("Error:", err)
+		L.Trace("Path:", planfile)
+		L.Info("Error:", err)
 		return err
 	}
 	defer f.Close()
@@ -35,7 +36,7 @@ func (p *Plan) CreatePlan(planfile string) error {
 			if err != nil {
 				L.Error("Unable to get absolute path")
 				L.Trace("Path:", scan)
-				L.Trace("Error:", err)
+				L.Info("Error:", err)
 				return err
 			}
 		}
