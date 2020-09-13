@@ -1,5 +1,6 @@
-ASCIIDOC(1)
-===========
+BR(1)
+=====
+Moritz Poldrack <moritz at poldrack dot dev>
 :doctype: manpage
 
 
@@ -76,16 +77,23 @@ OPTIONS
 	switches may be passed to the editor in order to change its
 	behaviour.
 
+*--loglevel*=LEVEL::
+	Sets the loglevel to either trace, debug, info, warn, error, or fatal. With
+	Increasing verbosity.
+
 
 
 ENVIRONMENT
 -----------
 *BR_RECURSIVE*::
-	BR_RECURSIIVE indicates whether the --recursive option is set by
-	default or not.
+	BR_RECURSIIVE indicates whether the --recursive option is set by default or
+	not.
 
 *EDITOR*::
 	EDITOR contains the path of the editor binary to use by default.
+
+*BR_ENABLE_TRACE*::
+	If set, this enables trace messages. This will create a lot of noise.
 
 
 EXIT STATUS
@@ -101,20 +109,10 @@ EXIT STATUS
 	The provided arguments are erroneous.
 
 
-EXAMPLES
---------
-
-
 BUGS
 ----
 Editor-Arguments starting with a dash can only be provided using the 
 --args=--wait syntax. Otherwise the call will fail with exit-code 2.
-
-
-AUTHOR
-------
-bulkrename was written by Moritz Poldrack. You may send Bugs or
-issues to <moritz at poldrack dot dev> or submit them on GitLab.
 
 
 RESOURCES
