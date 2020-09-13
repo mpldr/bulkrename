@@ -1,3 +1,4 @@
+// Package main is for creating an executable
 package main
 
 import (

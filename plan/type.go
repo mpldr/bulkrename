@@ -12,6 +12,7 @@ import (
 	. "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
 )
 
+// Plan stores all information on a rename-job. and provides related funtions.
 type Plan struct {
 	// TempID contains the id of the Plan (i.e. the unique identifier of the job.
 	TempID string
@@ -51,6 +52,7 @@ func NewPlan() *Plan {
 	}
 }
 
+// GetFileList returns a list of the files to edit
 func (p *Plan) GetFileList() []string {
 	pwd, err := os.Getwd()
 	if err != nil {
@@ -68,6 +70,7 @@ func (p *Plan) GetFileList() []string {
 	return p.InFiles
 }
 
+// TempFile returns the path to the temporary file
 func (p *Plan) TempFile() string {
 	return os.TempDir() + string(os.PathSeparator) + "br_" + p.TempID
 }
@@ -76,6 +79,7 @@ func init() {
 	rand.Seed(time.Since(time.Now()).Nanoseconds())
 }
 
+// Execute iterates over the jobs and executes them
 func (p *Plan) Execute() (errOccured bool, errorDescs []string, errs []error) {
 	for _, job := range p.jobs {
 		switch job.Action {

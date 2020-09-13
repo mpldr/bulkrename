@@ -1,3 +1,5 @@
+// Package plan provides functions that are associated with the Plan and the
+// type of the same name.
 package plan
 
 import (
@@ -11,6 +13,7 @@ import (
 	"gitlab.com/poldi1405/go-ansi"
 )
 
+// CreatePlan reads the new filenames from the temporary file
 func (p *Plan) CreatePlan(planfile string) error {
 	f, err := os.Open(planfile)
 	if err != nil {
@@ -52,6 +55,8 @@ func (p *Plan) CreatePlan(planfile string) error {
 	return nil
 }
 
+// PrepareExecution creates a set of prerules that need to be executed in order
+// to execute the actual plan.
 func (p *Plan) PrepareExecution() error {
 	var prerules []JobDescriptor
 
@@ -137,6 +142,7 @@ func (p *Plan) PrepareExecution() error {
 	return nil
 }
 
+// PreviewPlan prints a preview of the plan that is to be executed
 func (p *Plan) PreviewPlan() {
 	if len(p.jobs) == 0 {
 		fmt.Println("There is nothing to do.")

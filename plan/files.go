@@ -12,6 +12,7 @@ import (
 
 var wg sync.WaitGroup
 
+// LoadFileList loads the list of files into the Plan-Type
 func (p *Plan) LoadFileList(files []string, recursive bool) {
 	if recursive {
 		L.Debug("entering recursive mode")

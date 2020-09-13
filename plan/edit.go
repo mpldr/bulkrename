@@ -8,6 +8,7 @@ import (
 	"gitlab.com/poldi1405/go-ansi"
 )
 
+// StartEditing launches the editor and loads the required file for editing
 func (p *Plan) StartEditing() error {
 	if len(p.InFiles) == 0 {
 		L.Info("No files for editing left, so no editing necessary")

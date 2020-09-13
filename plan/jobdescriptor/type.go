@@ -1,5 +1,7 @@
+// Package jobdescriptor provides a type to store information of a job in
 package jobdescriptor
 
+// JobDescriptor contains all relevant information on a job.
 type JobDescriptor struct {
 	// Action contains the code of the action to perform.
 	// -1 = delete
