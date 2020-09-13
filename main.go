@@ -6,6 +6,7 @@ import (
 	"os"
 
 	cli "github.com/jawher/mow.cli"
+	"github.com/mborders/logmatic"
 
 	"gitlab.com/poldi1405/bulkrename/plan"
 	"gitlab.com/poldi1405/go-ansi"
@@ -18,33 +19,82 @@ var (
 	check        *bool
 	mkdir        bool
 	editor       *string
+	loglevel     *string
 	args         *[]string
 	overwrite    bool
 	delem        *bool
 	files        *[]string
+	l            *logmatic.Logger
 )
 
 func main() {
 	br := cli.App("br", "Rename files in a bulk")
+	l = logmatic.NewLogger()
+	trace := os.Getenv("BR_ENABLE_TRACE")
+	if len(trace) > 0 {
+		l.SetLevel(logmatic.TRACE)
+		l.Debug("LogLevel set to TRACE")
+	} else {
+		l.SetLevel(logmatic.WARN)
+	}
 
 	setupCLI(br)
 
 	br.Action = func() {
+		switch *loglevel {
+		case "trace":
+			l.Debug("Set LogLevel to TRACE")
+			l.SetLevel(logmatic.TRACE)
+
+		case "debug":
+			l.Debug("Set LogLevel to DEBUG")
+			l.SetLevel(logmatic.DEBUG)
+
+		case "info":
+			l.Debug("Set LogLevel to INFO")
+			l.SetLevel(logmatic.INFO)
+
+		case "error":
+			l.Debug("Set LogLevel to ERROR")
+			l.SetLevel(logmatic.ERROR)
+
+		case "fatal":
+			l.Debug("Set LogLevel to FATAL")
+			l.SetLevel(logmatic.FATAL)
+		}
+		if len(trace) > 0 {
+			l.SetLevel(logmatic.TRACE)
+			l.Debug("Reset LogLevel to TRACE because BR_ENABLE_TRACE is set")
+		}
+
+		plan.L = l
+
+		l.Info("setting up plan")
 		jobplan := plan.NewPlan()
 
 		jobplan.AbsolutePaths = *absolute
+		l.Debug("set AbsolutePaths to", *absolute)
 		jobplan.Overwrite = overwrite
+		l.Debug("set Overwrite to", overwrite)
 		jobplan.Editor = *editor
+		l.Debug("set Editor to", *editor)
 		jobplan.EditorArgs = *args
+		l.Debug("set EditorArgs to", *args)
 		jobplan.CreateDirs = mkdir
+		l.Debug("set CreateDirs to", mkdir)
 		jobplan.StopToShow = *check
+		l.Debug("set StopToShow to", *check)
 		jobplan.DeleteEmpty = *delem
+		l.Debug("set DeleteEmpty to", *delem)
 
+		l.Info("cleaning input")
 		*files = RemoveInvalidEntries(*files)
+		l.Info("loading filelist")
 		jobplan.LoadFileList(*files, *recursive)
+		l.Info("starting editor")
 		err := jobplan.StartEditing()
 		if err != nil {
-			os.Exit(1)
+			l.Fatal("error occured when editing", err)
 		}
 
 		err = jobplan.PrepareExecution()
@@ -82,13 +132,13 @@ func main() {
 	}
 	err := br.Run(os.Args)
 	if err != nil {
-		panic(err)
+		l.Fatal("unable to execute", err)
 	}
 }
 
 func setupCLI(br *cli.Cli) {
 	br.Version("v version", "bulkrename "+buildVersion)
-	br.Spec = "[-r] [-a] [-d] [--editor] [--arg...] [--check] [--no-mkdir] [--no-overwrite] FILES..."
+	br.Spec = "[-r] [-a] [-d] [--editor] [--arg...] [--check] [--no-mkdir] [--no-overwrite] [--loglevel] FILES..."
 
 	recursive = br.Bool(cli.BoolOpt{
 		Name:   "r recursive",
@@ -127,6 +177,12 @@ func setupCLI(br *cli.Cli) {
 		Name:  "d delete-empty",
 		Desc:  "delete files that were renamed to empty strings",
 		Value: false,
+	})
+
+	loglevel = br.String(cli.StringOpt{
+		Name:  "loglevel",
+		Desc:  "set the loglevel",
+		Value: "warn",
 	})
 
 	editor = br.String(cli.StringOpt{

@@ -4,5 +4,6 @@ go 1.14
 
 require (
 	github.com/jawher/mow.cli v1.2.0
+	github.com/mborders/logmatic v0.4.0
 	gitlab.com/poldi1405/go-ansi v1.0.1
 )
