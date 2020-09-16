@@ -28,6 +28,20 @@ doc:
 	xsltproc --nonet /etc/asciidoc/docbook-xsl/manpage.xsl documentation/manpage.1.xml
 
 clean:
-	$(RM) br.1 documentation/manpage.1.html documentation/manpage.1.xml bulkrename bulkrename.exe br br.exe
+	$(RM) -r br.1 br.1.gz documentation/manpage.1.html documentation/manpage.1.xml bulkrename bulkrename.exe br br.exe pkg/ releases/
 
 all: test build doc
+
+release: clean doc
+	mkdir -p pkg/usr/local/bin/ pkg/usr/share/man/man1/ pkg/windows/ releases/
+	gzip -cf br.1 > pkg/usr/share/man/man1/br.1.gz
+	env GOOS=linux go build -ldflags="-s -w -X main.buildVersion=${VERSION}" -trimpath -buildmode=pie -o pkg/usr/local/bin/br
+	sed -i 's/VERSION/${VERSION}/' .nfpm.yml
+	nfpm pkg --packager deb --target ./releases/ --config .nfpm.yml
+	nfpm pkg --packager rpm --target ./releases/ --config .nfpm.yml
+	nfpm pkg --packager apk --target ./releases/ --config .nfpm.yml
+	sed -i 's/${VERSION}/VERSION/' .nfpm.yml
+	cd pkg/; tar -c usr/ | xz > ../releases/bulkrename_linux_${VERSION}.tar.xz; cd ..
+	env GOOS=windows go build -ldflags="-s -w -X main.buildVersion=${VERSION}" -trimpath -buildmode=pie -o pkg/windows/br.exe
+	cp documentation/manpage.1.html pkg/windows/user_guide.html
+	cd pkg/windows/; zip ../../releases/windows_x64_${VERSION}.zip *; cd ../../
