@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -54,14 +53,15 @@ func TestRemoveInvalidEntries(t *testing.T) {
 
 	if len(result) != 1 {
 		if len(result) > 1 && result[1] == "test/not_allowed/permdenied" {
-			t.Log("seems like Chmod failed. Skipping test.")
+			t.Skipf("seems like Chmod failed. Skipping test.")
 			return
 		}
-		fmt.Println(result)
+		t.Log(result)
 		t.Error("list too long")
 	}
 
 	if result[0] != "test/ok" {
+		t.Log(result)
 		t.Error("wrong file kept")
 	}
 }
@@ -110,11 +110,17 @@ func TestRecursiveFileList(t *testing.T) {
 	result := listAllFiles("test")
 
 	if len(result) != 2 {
+		if len(result) > 2 && result[1] == "test/not_allowed/permdenied" {
+			t.Skipf("seems like Chmod failed. Skipping test.")
+			return
+		}
+		t.Log(result)
 		t.Error("list length does not match")
 		return
 	}
 
 	if result[1] != "test/ok" && result[0] != "test/allowed_but_empty" {
+		t.Log(result)
 		t.Error("wrong filelist")
 	}
 }
