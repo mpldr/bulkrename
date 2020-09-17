@@ -17,18 +17,18 @@ func (p *Plan) LoadFileList(files []string, recursive bool) {
 	if recursive {
 		L.Debug("entering recursive mode")
 		for _, path := range files {
-			L.Debug("working with file", path)
+			L.Debug("working with file " + path)
 			abspath, err := filepath.Abs(path)
 			if err != nil {
-				L.Error("Unable to get absolute Path of", path)
-				L.Trace("Error:", err)
+				L.Error("Unable to get absolute Path of " + path)
+				L.Info("Error: " + err.Error())
 				continue
 			}
 
 			s, err := os.Stat(abspath)
 			if err != nil {
-				L.Error("Unable to access", path)
-				L.Trace("Error:", err)
+				L.Error("Unable to access " + path)
+				L.Info("Error: " + err.Error())
 				continue
 			}
 
@@ -47,18 +47,18 @@ func (p *Plan) LoadFileList(files []string, recursive bool) {
 		wg.Wait()
 	} else {
 		for _, path := range files {
-			L.Debug("working with file", path)
+			L.Debug("working with file " + path)
 			abspath, err := filepath.Abs(path)
 			if err != nil {
-				L.Error("Unable to get absolute Path of", path)
-				L.Trace("Error:", err)
+				L.Error("Unable to get absolute Path of " + path)
+				L.Info("Error: " + err.Error())
 				continue
 			}
 
 			s, err := os.Stat(abspath)
 			if err != nil {
-				L.Error("Unable to access", path)
-				L.Trace("Error:", err)
+				L.Error("Unable to access " + path)
+				L.Info("Error: " + err.Error())
 				continue
 			}
 
@@ -77,7 +77,6 @@ func (p *Plan) LoadFileList(files []string, recursive bool) {
 	p.inFilesMtx.Unlock()
 }
 
-// TODO: implement function
 func (p *Plan) listAllFiles(start string) error {
 	var done bool
 	defer wg.Done()
@@ -94,7 +93,11 @@ func (p *Plan) listAllFiles(start string) error {
 	var files []string
 
 	err := filepath.Walk(start, func(path string, info os.FileInfo, err error) error {
-		L.Debug("Found", path)
+		L.Debug("Found " + path)
+		if info == nil {
+			L.Trace("dafuq @ " + path)
+			return nil
+		}
 		if !info.IsDir() {
 			L.Debug(path, "is a file")
 			files = append(files, filepath.Clean(path))
@@ -105,8 +108,8 @@ func (p *Plan) listAllFiles(start string) error {
 
 		f, err := os.Open(path)
 		if err != nil {
-			L.Error("Error opening", path)
-			L.Trace("Error:", err)
+			L.Error("Error opening " + path)
+			L.Info("Error: " + err.Error())
 			return nil
 		}
 		defer f.Close()
@@ -118,8 +121,8 @@ func (p *Plan) listAllFiles(start string) error {
 			return nil
 		}
 		if err != nil {
-			L.Error("Error while scanning", path)
-			L.Trace("Error:", err)
+			L.Error("Error while scanning " + path)
+			L.Info("Error:" + err.Error())
 			return nil
 		}
 
@@ -144,16 +147,16 @@ func (p *Plan) writeTempFile() error {
 	defer f.Close()
 	if err != nil {
 		L.Error("Unable to create temporary file")
-		L.Trace("Error:", err)
+		L.Info("Error: " + err.Error())
 		return err
 	}
 	for _, v := range p.GetFileList() {
 		fmt.Fprintln(f, v)
 		if err != nil {
 			L.Error("Error writing filelist to temporary file")
-			L.Trace("Path:", v)
-			L.Trace("TempFile:", p.TempFile())
-			L.Trace("Error:", err)
+			L.Trace("Path: " + v)
+			L.Trace("TempFile: " + p.TempFile())
+			L.Info("Error: " + err.Error())
 			return err
 		}
 	}

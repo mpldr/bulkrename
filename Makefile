@@ -14,7 +14,7 @@ check:
 
 
 test:
-	go test -v -cover
+	go test -v -cover ./...
 
 coveralls:
 	go get golang.org/x/tools/cmd/cover

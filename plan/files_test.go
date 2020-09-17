@@ -1,4 +1,4 @@
-package main
+package plan
 
 import (
 	"os"
@@ -7,17 +7,17 @@ import (
 	"github.com/mborders/logmatic"
 )
 
-func TestRemoveInvalidEntries(t *testing.T) {
-	l = logmatic.NewLogger()
-	l.SetLevel(logmatic.LogLevel(42))
-	l.SetLevel(logmatic.FATAL)
-	filelist := []string{
-		"test/ok",
-		"test/noexist&/&%",
-		"test/not_allowed/permdenied",
-	}
+func TestRecursiveFileList(t *testing.T) {
+	var p Plan
+	L = logmatic.NewLogger()
+	L.SetLevel(logmatic.LogLevel(42))
+	L.SetLevel(logmatic.FATAL)
 
 	if err := os.MkdirAll("test/not_allowed", 0700); err != nil {
+		t.Error(err)
+	}
+
+	if err := os.MkdirAll("test/allowed_but_empty", 0700); err != nil {
 		t.Error(err)
 	}
 
@@ -49,19 +49,19 @@ func TestRemoveInvalidEntries(t *testing.T) {
 		}
 	}()
 
-	result := RemoveInvalidEntries(filelist)
+	wg.Add(1)
+	_ = p.listAllFiles("test")
+	wg.Wait()
 
-	if len(result) != 1 {
-		if len(result) > 1 && result[1] == "test/not_allowed/permdenied" {
+	result := p.InFiles
+
+	if len(result) != 2 {
+		if len(result) > 2 && result[1] == "test/not_allowed/permdenied" {
 			t.Skipf("seems like Chmod failed. Skipping test.")
 			return
 		}
 		t.Log(result)
-		t.Error("list too long")
-	}
-
-	if result[0] != "test/ok" {
-		t.Log(result)
-		t.Error("wrong file kept")
+		t.Error("list length does not match")
+		return
 	}
 }
