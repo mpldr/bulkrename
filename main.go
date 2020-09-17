@@ -98,13 +98,13 @@ func main() {
 		err := jobplan.StartEditing()
 		if err != nil {
 			l.Info(err.Error())
-			l.Fatal("error occured when editing")
+			l.Fatal("error occurred when editing")
 		}
 
 		err = jobplan.PrepareExecution()
 		if err != nil {
 			l.Info(err.Error())
-			l.Fatal("error occured when preparing execution")
+			l.Fatal("error occurred when preparing execution")
 		}
 
 		if jobplan.StopToShow {

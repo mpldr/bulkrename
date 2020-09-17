@@ -21,7 +21,7 @@ func TestCLISetup(t *T) {
 		[]string{"jt", "-r", "-a"},
 		[]string{"jt", "--not-a-real-argument", "abc"},
 		[]string{"jt", ""},
-	}*/ //postponed until there is a way to supress help message being printed
+	}*/ //postponed until there is a way to suppress help message being printed
 
 	test := cli.App("jt", "just a test app")
 	test.Cmd.ErrorHandling = flag.ContinueOnError

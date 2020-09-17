@@ -26,7 +26,7 @@ func RemoveInvalidEntries(files []string) []string {
 			l.Info("Error: " + err.Error())
 		}
 		if err != nil {
-			l.Debug("an error occured, removing file from list")
+			l.Debug("an error occurred, removing file from list")
 			// switch with last element and remove the last
 			files[i-dropped] = files[len(files)-1]
 			files = files[:len(files)-1]
