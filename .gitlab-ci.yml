@@ -19,8 +19,8 @@ build_development:
     - env GOOS=windows GOARCH=amd64 make build
   artifacts:
     paths:
-      - bulkrename
-      - bulkrename.exe
+      - br
+      - br.exe
 
 testing:
   stage: test
