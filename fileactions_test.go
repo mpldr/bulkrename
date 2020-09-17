@@ -11,7 +11,7 @@ import (
 func TestRemoveInvalidEntries(t *testing.T) {
 	l = logmatic.NewLogger()
 	l.SetLevel(logmatic.LogLevel(42))
-	l.SetLevel(logmatic.DEBUG)
+	l.SetLevel(logmatic.FATAL)
 	filelist := []string{
 		"test/ok",
 		"test/noexist&/&%",
@@ -21,6 +21,13 @@ func TestRemoveInvalidEntries(t *testing.T) {
 	if err := os.MkdirAll("test/not_allowed", 0700); err != nil {
 		t.Error(err)
 	}
+
+	defer func() {
+		err := os.RemoveAll("test")
+		if err != nil {
+			t.Error(err)
+		}
+	}()
 
 	_, err := os.Create("test/ok")
 	if err != nil {
@@ -36,6 +43,12 @@ func TestRemoveInvalidEntries(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	defer func() {
+		err := os.Chmod("test/not_allowed", 0700)
+		if err != nil {
+			t.Error(err)
+		}
+	}()
 
 	result := RemoveInvalidEntries(filelist)
 
@@ -44,7 +57,60 @@ func TestRemoveInvalidEntries(t *testing.T) {
 		t.Error("list too long")
 	}
 
-	if result[0] != "ok" {
+	if result[0] != "test/ok" {
 		t.Error("wrong file kept")
+	}
+}
+
+func TestRecursiveFileList(t *testing.T) {
+	l = logmatic.NewLogger()
+	l.SetLevel(logmatic.LogLevel(42))
+	l.SetLevel(logmatic.FATAL)
+
+	if err := os.MkdirAll("test/not_allowed", 0700); err != nil {
+		t.Error(err)
+	}
+
+	if err := os.MkdirAll("test/allowed_but_empty", 0700); err != nil {
+		t.Error(err)
+	}
+
+	defer func() {
+		err := os.RemoveAll("test")
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+
+	_, err := os.Create("test/ok")
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = os.Create("test/not_allowed/permdenied")
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = os.Chmod("test/not_allowed", 0000)
+	if err != nil {
+		t.Error(err)
+	}
+	defer func() {
+		err := os.Chmod("test/not_allowed", 0700)
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+
+	result := listAllFiles("test")
+
+	if len(result) != 2 {
+		t.Error("list length does not match")
+		return
+	}
+
+	if result[1] != "test/ok" && result[0] != "test/allowed_but_empty" {
+		t.Error("wrong filelist")
 	}
 }

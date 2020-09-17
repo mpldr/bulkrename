@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"gitlab.com/poldi1405/bulkrename/plan"
-	"gitlab.com/poldi1405/go-ansi"
 )
 
 // RemoveInvalidEntries checks every entry in files and removes it if there is an issue accessing it. Additionally an error message with additional information is shown.
 func RemoveInvalidEntries(files []string) []string {
+	dropped := 0
 	for i, file := range files {
 		l.Debug("trying file " + file)
 		_, err := os.Stat(file)
@@ -31,8 +32,9 @@ func RemoveInvalidEntries(files []string) []string {
 		if err != nil {
 			l.Debug("an error occured, removing file from list")
 			// switch with last element and remove the last
-			files[i] = files[len(files)-1]
+			files[i-dropped] = files[len(files)-1]
 			files = files[:len(files)-1]
+			dropped++
 		}
 	}
 	l.Trace("Complete list of files:" + strings.Join(files, ":"))
@@ -53,7 +55,7 @@ func listFiles(p *plan.Plan, files []string, recursive bool) {
 
 	if recursive {
 		for _, v := range files {
-			listAllFiles(v)
+			fmt.Println(listAllFiles(v))
 		}
 	}
 
@@ -65,9 +67,28 @@ func listAllFiles(path string) []string {
 	var result []string
 	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			fmt.Println(ansi.Red("ERROR!"), err.Error())
+			l.Error(err.Error())
+			return nil
 		}
-		fmt.Printf("File Name: %s\n", info.Name())
+
+		// if it is a directory, check if there is content in it
+		if info.IsDir() {
+			content, err := ioutil.ReadDir(path)
+			if err != nil {
+				l.Error(err.Error())
+				return nil
+			}
+
+			// more content further down, skip it
+			if len(content) != 0 {
+				return nil
+			}
+
+			result = append(result, path+string(os.PathSeparator))
+			return nil
+		}
+
+		result = append(result, path)
 		return nil
 	})
 	return result
