@@ -14,63 +14,42 @@ var wg sync.WaitGroup
 
 // LoadFileList loads the list of files into the Plan-Type
 func (p *Plan) LoadFileList(files []string, recursive bool) {
-	if recursive {
-		L.Debug("entering recursive mode")
-		for _, path := range files {
-			L.Debug("working with file " + path)
-			abspath, err := filepath.Abs(path)
-			if err != nil {
-				L.Error("Unable to get absolute Path of " + path)
-				L.Info("Error: " + err.Error())
-				continue
-			}
-
-			s, err := os.Stat(abspath)
-			if err != nil {
-				L.Error("Unable to access " + path)
-				L.Info("Error: " + err.Error())
-				continue
-			}
-
-			if s.IsDir() {
-				L.Debug(path, "is a directory, scanning for files")
-				wg.Add(1)
-				go p.listAllFiles(abspath)
-			} else {
-				L.Debug(path, "is a file, appending to files")
-				p.inFilesMtx.Lock()
-				p.InFiles = append(p.InFiles, filepath.Clean(abspath))
-				p.inFilesMtx.Unlock()
-			}
+	L.Debug("entering recursive mode")
+	for _, path := range files {
+		L.Debug("working with file " + path)
+		abspath, err := filepath.Abs(path)
+		if err != nil {
+			L.Error("Unable to get absolute Path of " + path)
+			L.Info("Error: " + err.Error())
+			continue
 		}
-		L.Debug("Waiting for directory scans to finish")
-		wg.Wait()
-	} else {
-		for _, path := range files {
-			L.Debug("working with file " + path)
-			abspath, err := filepath.Abs(path)
-			if err != nil {
-				L.Error("Unable to get absolute Path of " + path)
-				L.Info("Error: " + err.Error())
-				continue
-			}
 
-			s, err := os.Stat(abspath)
-			if err != nil {
-				L.Error("Unable to access " + path)
-				L.Info("Error: " + err.Error())
-				continue
-			}
+		s, err := os.Stat(abspath)
+		if err != nil {
+			L.Error("Unable to access " + path)
+			L.Info("Error: " + err.Error())
+			continue
+		}
 
-			if s.IsDir() {
-				L.Debug("is a directory, appending path separator")
-				abspath += string(os.PathSeparator)
-			}
+		if s.IsDir() && recursive {
+			L.Debug(path, "is a directory, scanning for files")
+			wg.Add(1)
+			go p.listAllFiles(abspath)
+		} else if s.IsDir() { // no recursion
+			L.Debug("is a directory, appending path separator")
+			abspath += string(os.PathSeparator)
+			p.inFilesMtx.Lock()
+			p.InFiles = append(p.InFiles, filepath.Clean(abspath))
+			p.inFilesMtx.Unlock()
+		} else {
+			L.Debug(path, "is a file, appending to files")
 			p.inFilesMtx.Lock()
 			p.InFiles = append(p.InFiles, filepath.Clean(abspath))
 			p.inFilesMtx.Unlock()
 		}
 	}
+	L.Debug("Waiting for directory scans to finish")
+	wg.Wait()
 	p.inFilesMtx.Lock()
 	L.Debug("sorting filelist")
 	sort.Strings(p.InFiles)
