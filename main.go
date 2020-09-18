@@ -12,7 +12,6 @@ import (
 	"github.com/mborders/logmatic"
 
 	"gitlab.com/poldi1405/bulkrename/plan"
-	"gitlab.com/poldi1405/go-ansi"
 )
 
 var (
@@ -124,10 +123,11 @@ func main() {
 
 		errOcc, msgs, errs := jobplan.Execute()
 		if errOcc {
-			fmt.Print(ansi.Bold(ansi.Red("ERROR!")), "\nThe following errors occures while executing the plan:\n\n")
+			l.Error("Errors occurred while executing the plan")
 
 			for i, msg := range msgs {
-				fmt.Println(msg, errs[i])
+				l.Info(msg)
+				l.Info(errs[i].Error())
 			}
 			os.Exit(1)
 		}

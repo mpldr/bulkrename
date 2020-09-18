@@ -28,6 +28,7 @@ func TestCLISetup(t *T) {
 	setupCLI(test)
 
 	for _, v := range validCalls {
+		// no action necessary as this is just a test
 		test.Action = func() {}
 
 		err := test.Run(v)

@@ -109,7 +109,7 @@ func (p *Plan) PrepareExecution() error {
 			}
 
 			// if it is not a directory but a file, delete (overwrite) it and remake it as a directory
-			if !dfi.IsDir() {
+			if !dfi.IsDir() && p.CreateDirs {
 				prerules = append(prerules, JobDescriptor{Action: -1, SourcePath: dir})
 				prerules = append(prerules, JobDescriptor{Action: 2, SourcePath: dir})
 			}
