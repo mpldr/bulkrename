@@ -5,9 +5,12 @@ package plan
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"time"
 
 	. "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
 	"gitlab.com/poldi1405/go-ansi"
@@ -58,13 +61,19 @@ func (p *Plan) CreatePlan(planfile string) error {
 // PrepareExecution creates a set of prerules that need to be executed in order
 // to execute the actual plan.
 func (p *Plan) PrepareExecution() error {
-	var prerules []JobDescriptor
 
 	assumeExisting := make(map[string]bool)
+
+	L.Debug("checking for circular file-movement")
+	prerules := p.findCollisions()
 
 	for _, job := range p.jobs {
 		L.Debug("From:", job.SourcePath)
 		L.Debug("To  :", job.DstPath)
+		if job.Action == 3 { // this file was moved by the ringdetection
+			L.Debug("ignoring this job, it was generated as collision prevention")
+			continue
+		}
 		f, err := os.Open(job.SourcePath)
 		if err != nil {
 			f.Close()
@@ -142,6 +151,48 @@ func (p *Plan) PrepareExecution() error {
 	return nil
 }
 
+// findCollisions scans for file-switching. If there is a loop, break it.
+func (p *Plan) findCollisions() []JobDescriptor {
+	var prerules []JobDescriptor
+
+	destinations := make(map[string]struct{})
+
+	L.Debug("setting up map of destinationpaths")
+	for _, j := range p.jobs {
+		destinations[j.DstPath] = struct{}{}
+	}
+
+	for i := range p.jobs {
+		L.Debug("From:", p.jobs[i].SourcePath)
+		L.Debug("To  :", p.jobs[i].DstPath)
+		_, match := destinations[p.jobs[i].SourcePath]
+		if match { // this sourcefile is also a destination
+			rand.Seed(time.Now().UnixNano())
+
+			var safePath string
+			for {
+				safePath = p.jobs[i].SourcePath + "_" + strconv.Itoa(rand.Int())
+				if _, err := os.Stat(safePath); os.IsNotExist(err) { // file does not exist, we may continue
+					break
+				}
+			}
+			L.Debug("Collision found, moving from " + p.jobs[i].SourcePath + " to " + safePath)
+
+			moveToSafety := JobDescriptor{
+				Action:     1,
+				SourcePath: p.jobs[i].SourcePath,
+				DstPath:    safePath,
+			}
+
+			prerules = append(prerules, moveToSafety)
+			p.jobs[i].SourcePath = safePath
+			p.jobs[i].Action = 3
+		}
+	}
+
+	return prerules
+}
+
 // PreviewPlan prints a preview of the plan that is to be executed
 func (p *Plan) PreviewPlan() {
 	if len(p.jobs) == 0 {
@@ -156,6 +207,8 @@ func (p *Plan) PreviewPlan() {
 			fmt.Printf(ansi.Yellow("move  :")+" %v "+ansi.Blue("⮕")+" %v\n", job.SourcePath, job.DstPath)
 		case 2:
 			fmt.Printf(ansi.Yellow("mkdir :")+" %v\n", job.DstPath)
+		case 3: // rescued from being wrongfully overwritten
+			fmt.Printf(ansi.Yellow("rcvr  :")+" %v "+ansi.Blue("⮕")+" %v\n", job.SourcePath, job.DstPath)
 		}
 	}
 }
