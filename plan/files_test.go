@@ -98,6 +98,15 @@ func TestWriteTempFileFails(t *testing.T) {
 	os.Setenv("TMPDIR", "test/not_allowed")
 	defer func() { os.Setenv("TMPDIR", tmpdir) }()
 
+	_, err = os.Create("test/not_allowed/ok")
+	if err == nil {
+		t.Skip()
+	}
+
+	if err != nil {
+		t.Error(err)
+	}
+
 	err = p.writeTempFile()
 	if err == nil {
 		t.Fail()
