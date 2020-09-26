@@ -69,8 +69,8 @@ func (p *Plan) PrepareExecution() error {
 	prerules := p.findCollisions()
 
 	for _, job := range p.jobs {
-		L.Debug("From:", job.SourcePath)
-		L.Debug("To  :", job.DstPath)
+		L.Debug("From: " + job.SourcePath)
+		L.Debug("To  : " + job.DstPath)
 		if job.Action == 3 { // this file was moved by the ringdetection
 			L.Debug("ignoring this job, it was generated as collision prevention")
 			continue
@@ -164,8 +164,8 @@ func (p *Plan) findCollisions() []JobDescriptor {
 	}
 
 	for i := range p.jobs {
-		L.Debug("From:", p.jobs[i].SourcePath)
-		L.Debug("To  :", p.jobs[i].DstPath)
+		L.Debug("From: " + p.jobs[i].SourcePath)
+		L.Debug("To  : " + p.jobs[i].DstPath)
 		_, match := destinations[p.jobs[i].SourcePath]
 		if match { // this sourcefile is also a destination
 			rand.Seed(time.Now().UnixNano())
