@@ -29,7 +29,7 @@ type Plan struct {
 	Editor string
 	// EditorArgs contains the arguments that will be passed to the editor. {} will be replaced by the absolute path to the plan-file.
 	EditorArgs []string
-	// CreateDirs indicates whether non-existant directories should be created as needed
+	// CreateDirs indicates whether non-existent directories should be created as needed
 	CreateDirs bool
 	// StopToShow indicates whether an overview of the applied actions should be shown and confirmation requested
 	StopToShow bool

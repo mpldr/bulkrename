@@ -21,7 +21,8 @@ func (p *Plan) CreatePlan(planfile string) error {
 	f, err := os.Open(planfile)
 	if err != nil {
 		L.Error("Unable to open temporary file")
-		L.Trace("Error:", err)
+		L.Trace("Path:" + planfile)
+		L.Info("Error:" + err.Error())
 		return err
 	}
 	defer f.Close()
@@ -31,14 +32,14 @@ func (p *Plan) CreatePlan(planfile string) error {
 
 	for scanner.Scan() {
 		scan := scanner.Text()
-		L.Debug("Read", scan)
+		L.Debug("Read " + scan)
 		var path string
 		if scan != "" {
 			path, err = filepath.Abs(scan)
 			if err != nil {
 				L.Error("Unable to get absolute path")
-				L.Trace("Path:", scan)
-				L.Trace("Error:", err)
+				L.Trace("Path:" + scan)
+				L.Info("Error:" + err.Error())
 				return err
 			}
 		}
@@ -78,8 +79,8 @@ func (p *Plan) PrepareExecution() error {
 		if err != nil {
 			f.Close()
 			L.Error("Cannot access sourcefile")
-			L.Trace("Path:", job.SourcePath)
-			L.Trace("Error:", err)
+			L.Trace("Path:" + job.SourcePath)
+			L.Info("Error:" + err.Error())
 			return err
 		}
 
@@ -87,8 +88,8 @@ func (p *Plan) PrepareExecution() error {
 		f.Close()
 		if err != nil {
 			L.Error("Cannot stat sourcefile")
-			L.Trace("Path:", job.SourcePath)
-			L.Trace("Error:", err)
+			L.Trace("Path:" + job.SourcePath)
+			L.Info("Error:" + err.Error())
 			return err
 		}
 
@@ -117,7 +118,7 @@ func (p *Plan) PrepareExecution() error {
 			}
 
 			// if it is not a directory but a file, delete (overwrite) it and remake it as a directory
-			if !dfi.IsDir() {
+			if !dfi.IsDir() && p.CreateDirs {
 				prerules = append(prerules, JobDescriptor{Action: -1, SourcePath: dir})
 				prerules = append(prerules, JobDescriptor{Action: 2, SourcePath: dir})
 			}
@@ -135,15 +136,15 @@ func (p *Plan) PrepareExecution() error {
 				prerules = append(prerules, JobDescriptor{Action: 2, DstPath: dst})
 			} else if os.IsNotExist(err) {
 				L.Error("Destination does not exist")
-				L.Trace("Destination:", dst)
-				L.Trace("Error:", err)
+				L.Trace("Destination:" + dst)
+				L.Info("Error:" + err.Error())
 			} else if err != nil {
 				L.Error("There is an issue with the destination directory")
-				L.Trace("Destination:", dst)
-				L.Trace("Error:", err)
+				L.Trace("Destination:" + dst)
+				L.Info("Error:" + err.Error())
 				return err
 			}
-			L.Debug("assume that", dst, "does exist from now on")
+			L.Debug("assume that " + dst + " does exist from now on")
 			assumeExisting[dst] = true
 		}
 	}

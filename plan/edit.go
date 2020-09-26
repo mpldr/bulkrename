@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-
-	"gitlab.com/poldi1405/go-ansi"
 )
 
 // StartEditing launches the editor and loads the required file for editing
@@ -29,10 +27,9 @@ func (p *Plan) StartEditing() error {
 
 	err = c.Run()
 	if err != nil {
-		fmt.Printf(ansi.Red("PANIC!")+" Cannot start editor!\n\tExecutable: %v\n\tArguments: %v\n%v\n\nOutput:\n%v", p.Editor, p.EditorArgs, err)
-		L.Trace("Executable:", p.Editor)
-		L.Trace("Arguments:", p.EditorArgs)
-		L.Trace("Error:", err)
+		L.Trace("Executable:" + p.Editor)
+		L.Trace("Arguments:" + fmt.Sprint(p.EditorArgs))
+		L.Info("Error:" + err.Error())
 		L.Fatal("Cannot start editor!")
 		return err
 	}
@@ -47,7 +44,7 @@ func (p *Plan) prepareArguments() {
 
 	for i, arg := range p.EditorArgs {
 		if val, found := replace[arg]; found {
-			L.Debug("Replacing", p.EditorArgs[i], "with", val)
+			L.Debug("Replacing " + p.EditorArgs[i] + " with " + val)
 			p.EditorArgs[i] = val
 		}
 	}

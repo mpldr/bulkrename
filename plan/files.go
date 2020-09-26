@@ -14,70 +14,48 @@ var wg sync.WaitGroup
 
 // LoadFileList loads the list of files into the Plan-Type
 func (p *Plan) LoadFileList(files []string, recursive bool) {
-	if recursive {
-		L.Debug("entering recursive mode")
-		for _, path := range files {
-			L.Debug("working with file", path)
-			abspath, err := filepath.Abs(path)
-			if err != nil {
-				L.Error("Unable to get absolute Path of", path)
-				L.Trace("Error:", err)
-				continue
-			}
-
-			s, err := os.Stat(abspath)
-			if err != nil {
-				L.Error("Unable to access", path)
-				L.Trace("Error:", err)
-				continue
-			}
-
-			if s.IsDir() {
-				L.Debug(path, "is a directory, scanning for files")
-				wg.Add(1)
-				go p.listAllFiles(abspath)
-			} else {
-				L.Debug(path, "is a file, appending to files")
-				p.inFilesMtx.Lock()
-				p.InFiles = append(p.InFiles, filepath.Clean(abspath))
-				p.inFilesMtx.Unlock()
-			}
+	L.Debug("entering recursive mode")
+	for _, path := range files {
+		L.Debug("working with file " + path)
+		abspath, err := filepath.Abs(path)
+		if err != nil {
+			L.Error("Unable to get absolute Path of " + path)
+			L.Info("Error: " + err.Error())
+			continue
 		}
-		L.Debug("Waiting for directory scans to finish")
-		wg.Wait()
-	} else {
-		for _, path := range files {
-			L.Debug("working with file", path)
-			abspath, err := filepath.Abs(path)
-			if err != nil {
-				L.Error("Unable to get absolute Path of", path)
-				L.Trace("Error:", err)
-				continue
-			}
 
-			s, err := os.Stat(abspath)
-			if err != nil {
-				L.Error("Unable to access", path)
-				L.Trace("Error:", err)
-				continue
-			}
+		s, err := os.Stat(abspath)
+		if err != nil {
+			L.Error("Unable to access " + path)
+			L.Info("Error: " + err.Error())
+			continue
+		}
 
-			if s.IsDir() {
-				L.Debug("is a directory, appending path separator")
-				abspath += string(os.PathSeparator)
-			}
+		if s.IsDir() && recursive {
+			L.Debug(path, "is a directory, scanning for files")
+			wg.Add(1)
+			go p.listAllFiles(abspath)
+		} else if s.IsDir() { // no recursion
+			L.Debug("is a directory, appending path separator")
+			abspath += string(os.PathSeparator)
+			p.inFilesMtx.Lock()
+			p.InFiles = append(p.InFiles, filepath.Clean(abspath))
+			p.inFilesMtx.Unlock()
+		} else {
+			L.Debug(path, "is a file, appending to files")
 			p.inFilesMtx.Lock()
 			p.InFiles = append(p.InFiles, filepath.Clean(abspath))
 			p.inFilesMtx.Unlock()
 		}
 	}
+	L.Debug("Waiting for directory scans to finish")
+	wg.Wait()
 	p.inFilesMtx.Lock()
 	L.Debug("sorting filelist")
 	sort.Strings(p.InFiles)
 	p.inFilesMtx.Unlock()
 }
 
-// TODO: implement function
 func (p *Plan) listAllFiles(start string) error {
 	var done bool
 	defer wg.Done()
@@ -94,7 +72,11 @@ func (p *Plan) listAllFiles(start string) error {
 	var files []string
 
 	err := filepath.Walk(start, func(path string, info os.FileInfo, err error) error {
-		L.Debug("Found", path)
+		L.Debug("Found " + path)
+		if info == nil {
+			L.Trace("dafuq @ " + path)
+			return nil
+		}
 		if !info.IsDir() {
 			L.Debug(path, "is a file")
 			files = append(files, filepath.Clean(path))
@@ -105,8 +87,8 @@ func (p *Plan) listAllFiles(start string) error {
 
 		f, err := os.Open(path)
 		if err != nil {
-			L.Error("Error opening", path)
-			L.Trace("Error:", err)
+			L.Error("Error opening " + path)
+			L.Info("Error: " + err.Error())
 			return nil
 		}
 		defer f.Close()
@@ -118,8 +100,8 @@ func (p *Plan) listAllFiles(start string) error {
 			return nil
 		}
 		if err != nil {
-			L.Error("Error while scanning", path)
-			L.Trace("Error:", err)
+			L.Error("Error while scanning " + path)
+			L.Info("Error:" + err.Error())
 			return nil
 		}
 
@@ -144,16 +126,16 @@ func (p *Plan) writeTempFile() error {
 	defer f.Close()
 	if err != nil {
 		L.Error("Unable to create temporary file")
-		L.Trace("Error:", err)
+		L.Info("Error: " + err.Error())
 		return err
 	}
 	for _, v := range p.GetFileList() {
 		fmt.Fprintln(f, v)
 		if err != nil {
 			L.Error("Error writing filelist to temporary file")
-			L.Trace("Path:", v)
-			L.Trace("TempFile:", p.TempFile())
-			L.Trace("Error:", err)
+			L.Trace("Path: " + v)
+			L.Trace("TempFile: " + p.TempFile())
+			L.Info("Error: " + err.Error())
 			return err
 		}
 	}

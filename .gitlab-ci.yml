@@ -24,12 +24,12 @@ build_development:
 
 testing:
   stage: test
-  script: 
+  script:
     - make test
 
 merge_test:
   stage: test
-  script: 
+  script:
     - make coveralls
   only:
     - merge_requests
@@ -51,3 +51,4 @@ sonarcloud-check:
     - merge_requests
     - master
     - develop
+    - bugfix/tests
