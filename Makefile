@@ -9,6 +9,7 @@ else
 endif
 
 check:
+	gofmt -s -w -l .
 	gocyclo -over 15 -avg .
 	golint -set_exit_status ./...
 

@@ -93,9 +93,11 @@ func (p *Plan) PrepareExecution() error {
 			return err
 		}
 
+		// if it is a file
 		if !fi.IsDir() {
 			dir := filepath.Dir(job.DstPath)
 			dir = strings.TrimSuffix(dir, fi.Name())
+			// skip everything if we assume that it exists
 			if _, exists := assumeExisting[dir]; exists {
 				continue
 			}
@@ -118,7 +120,7 @@ func (p *Plan) PrepareExecution() error {
 			}
 
 			// if it is not a directory but a file, delete (overwrite) it and remake it as a directory
-			if !dfi.IsDir() && p.CreateDirs {
+			if !dfi.IsDir() && p.CreateDirs && p.Overwrite {
 				prerules = append(prerules, JobDescriptor{Action: -1, SourcePath: dir})
 				prerules = append(prerules, JobDescriptor{Action: 2, SourcePath: dir})
 			}
