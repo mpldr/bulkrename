@@ -108,6 +108,8 @@ func (p *Plan) PrepareExecution() error {
 				prerules = append(prerules, JobDescriptor{Action: 2, DstPath: dir + string(os.PathSeparator)})
 				d.Close()
 				continue
+			} else if os.IsNotExist(err) {
+				return dirCreationNotAllowed
 			} else if err != nil {
 				d.Close()
 				return err
@@ -123,6 +125,8 @@ func (p *Plan) PrepareExecution() error {
 			if !dfi.IsDir() && p.CreateDirs && p.Overwrite {
 				prerules = append(prerules, JobDescriptor{Action: -1, SourcePath: dir})
 				prerules = append(prerules, JobDescriptor{Action: 2, SourcePath: dir})
+			} else if !dfi.IsDir() && !(p.CreateDirs && p.Overwrite) { // if overwriting or creating directories is not allowed
+				return multipleChoiceNotAllowed
 			}
 			assumeExisting[dir] = true
 		} else {
@@ -140,6 +144,7 @@ func (p *Plan) PrepareExecution() error {
 				L.Error("Destination does not exist")
 				L.Trace("Destination:" + dst)
 				L.Info("Error:" + err.Error())
+				return dirCreationNotAllowed
 			} else if err != nil {
 				L.Error("There is an issue with the destination directory")
 				L.Trace("Destination:" + dst)

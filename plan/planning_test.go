@@ -250,7 +250,7 @@ func TestFailBecauseActionForbidden(t *testing.T) {
 	p.Overwrite = false
 	p.CreateDirs = false
 	err = p.PrepareExecution()
-	if err != dirCreationNotAllowed {
+	if err != multipleChoiceNotAllowed {
 		t.Error("did not fail when overwriting and creating directories is forbidden")
 	}
 
@@ -273,5 +273,115 @@ func TestFailBecauseActionForbidden(t *testing.T) {
 	err = p.PrepareExecution()
 	if err == dirCreationNotAllowed {
 		t.Error("did not fail when only creating directories is forbidden")
+	}
+}
+
+func TestFailBecauseMkdirForbidden(t *testing.T) {
+	L = logmatic.NewLogger()
+	L.SetLevel(logmatic.LogLevel(42))
+	L.SetLevel(logmatic.FATAL)
+	var p Plan
+	var reset = func() {
+		p.InFiles = []string{"1"}
+		p.OutFiles = []string{"2/1"}
+		p.jobs = []j.JobDescriptor{
+			{
+				Action:     0,
+				SourcePath: "1",
+				DstPath:    "2/1",
+			},
+		}
+	}
+	reset()
+
+	_, err := os.Create("1")
+	if err != nil {
+		t.Skipf(err.Error())
+	}
+	defer os.Remove("1")
+
+	p.Overwrite = true
+	p.CreateDirs = false
+	err = p.PrepareExecution()
+	if err != dirCreationNotAllowed {
+		t.Error("did not fail when directories is forbidden")
+	}
+}
+
+func TestCreateMkdirPrerule(t *testing.T) {
+	L = logmatic.NewLogger()
+	L.SetLevel(logmatic.LogLevel(42))
+	L.SetLevel(logmatic.FATAL)
+	var p Plan
+	var reset = func() {
+		p.InFiles = []string{"1"}
+		p.OutFiles = []string{"2/1"}
+		p.jobs = []j.JobDescriptor{
+			{
+				Action:     0,
+				SourcePath: "1",
+				DstPath:    "2/1",
+			},
+		}
+	}
+	reset()
+
+	_, err := os.Create("1")
+	if err != nil {
+		t.Skipf(err.Error())
+	}
+	defer os.Remove("1")
+
+	p.Overwrite = true
+	p.CreateDirs = true
+	err = p.PrepareExecution()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(p.jobs) != 2 || p.jobs[0].Action != 2 {
+		t.Fail()
+	}
+}
+
+func TestReplaceFileWithDirectoryPrerules(t *testing.T) {
+	L = logmatic.NewLogger()
+	L.SetLevel(logmatic.LogLevel(42))
+	L.SetLevel(logmatic.FATAL)
+	var p Plan
+	var reset = func() {
+		p.InFiles = []string{"1"}
+		p.OutFiles = []string{"3/1"}
+		p.jobs = []j.JobDescriptor{
+			{
+				Action:     0,
+				SourcePath: "1",
+				DstPath:    "3/1",
+			},
+		}
+	}
+	reset()
+
+	_, err := os.Create("1")
+	if err != nil {
+		t.Skipf(err.Error())
+	}
+	defer os.Remove("1")
+
+	_, err = os.Create("3")
+	if err != nil {
+		t.Skipf(err.Error())
+	}
+	defer os.Remove("3")
+
+	p.Overwrite = true
+	p.CreateDirs = true
+	err = p.PrepareExecution()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(p.jobs) != 3 || p.jobs[0].Action != -1 || p.jobs[1].Action != 2 {
+		t.Fail()
 	}
 }
