@@ -385,3 +385,71 @@ func TestReplaceFileWithDirectoryPrerules(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestIgnoreRingDetectionRules(t *testing.T) {
+	L = logmatic.NewLogger()
+	L.SetLevel(logmatic.LogLevel(42))
+	L.SetLevel(logmatic.FATAL)
+	var p Plan
+	var reset = func() {
+		p.InFiles = []string{"1"}
+		p.OutFiles = []string{"3/1"}
+		p.jobs = []j.JobDescriptor{
+			{
+				Action:     3,
+				SourcePath: "1",
+				DstPath:    "3/1",
+			},
+		}
+	}
+	reset()
+
+	_, err := os.Create("1")
+	if err != nil {
+		t.Skipf(err.Error())
+	}
+	defer os.Remove("1")
+
+	_, err = os.Create("3")
+	if err != nil {
+		t.Skipf(err.Error())
+	}
+	defer os.Remove("3")
+
+	p.Overwrite = true
+	p.CreateDirs = true
+	err = p.PrepareExecution()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(p.jobs) != 1 {
+		t.Fail()
+	}
+}
+
+func TestPlanningSourceFileNotExist(t *testing.T) {
+	L = logmatic.NewLogger()
+	L.SetLevel(logmatic.LogLevel(42))
+	L.SetLevel(logmatic.FATAL)
+	var p Plan
+	var reset = func() {
+		p.InFiles = []string{"1"}
+		p.OutFiles = []string{"3/1"}
+		p.jobs = []j.JobDescriptor{
+			{
+				Action:     0,
+				SourcePath: "1",
+				DstPath:    "3/1",
+			},
+		}
+	}
+	reset()
+
+	p.Overwrite = true
+	p.CreateDirs = true
+	err := p.PrepareExecution()
+	if !os.IsNotExist(err) {
+		t.Fail()
+	}
+}
