@@ -33,17 +33,17 @@ func TestDetectCircles(t *testing.T) {
 	p.InFiles = []string{"1", "2", "3"}
 	p.OutFiles = []string{"2", "3", "1"}
 	p.jobs = []j.JobDescriptor{
-		j.JobDescriptor{
+		{
 			Action:     0,
 			SourcePath: "1",
 			DstPath:    "2",
 		},
-		j.JobDescriptor{
+		{
 			Action:     0,
 			SourcePath: "2",
 			DstPath:    "3",
 		},
-		j.JobDescriptor{
+		{
 			Action:     0,
 			SourcePath: "3",
 			DstPath:    "1",
@@ -65,17 +65,17 @@ func TestDetectLinearReplace(t *testing.T) {
 	p.InFiles = []string{"1", "2", "3"}
 	p.OutFiles = []string{"2", "3", "1"}
 	p.jobs = []j.JobDescriptor{
-		j.JobDescriptor{
+		{
 			Action:     0,
 			SourcePath: "1",
 			DstPath:    "2",
 		},
-		j.JobDescriptor{
+		{
 			Action:     0,
 			SourcePath: "2",
 			DstPath:    "3",
 		},
-		j.JobDescriptor{
+		{
 			Action:     0,
 			SourcePath: "3",
 			DstPath:    "4",
@@ -97,17 +97,17 @@ func TestDetectNoCircles(t *testing.T) {
 	p.InFiles = []string{"1", "2", "3"}
 	p.OutFiles = []string{"2", "3", "1"}
 	p.jobs = []j.JobDescriptor{
-		j.JobDescriptor{
+		{
 			Action:     0,
 			SourcePath: "1",
 			DstPath:    "4",
 		},
-		j.JobDescriptor{
+		{
 			Action:     0,
 			SourcePath: "2",
 			DstPath:    "5",
 		},
-		j.JobDescriptor{
+		{
 			Action:     0,
 			SourcePath: "3",
 			DstPath:    "6",
@@ -194,7 +194,7 @@ func TestNoUnnecessaryPrerules(t *testing.T) {
 	p.InFiles = []string{"1"}
 	p.OutFiles = []string{"2"}
 	p.jobs = []j.JobDescriptor{
-		j.JobDescriptor{
+		{
 			Action:     0,
 			SourcePath: "1",
 			DstPath:    "2",
@@ -226,7 +226,7 @@ func TestFailBecauseActionForbidden(t *testing.T) {
 		p.InFiles = []string{"1"}
 		p.OutFiles = []string{"3/2/1"}
 		p.jobs = []j.JobDescriptor{
-			j.JobDescriptor{
+			{
 				Action:     0,
 				SourcePath: "1",
 				DstPath:    "3/1",
