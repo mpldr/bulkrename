@@ -1,5 +1,11 @@
 # bulkrename
 
+![codecov](https://codecov.io/gl/poldi1405/bulkrename/branch/develop/graph/badge.svg?token=656MXKJG7U)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=poldi1405_bulkrename&metric=alert_status)](https://sonarcloud.io/dashboard?id=poldi1405_bulkrename)
+
+[![Go Report Card](https://goreportcard.com/badge/gitlab.com/poldi1405/bulkrename)](https://goreportcard.com/report/gitlab.com/poldi1405/bulkrename)
+
 ## Installation
 
 ```
