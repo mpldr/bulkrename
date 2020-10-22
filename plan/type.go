@@ -91,15 +91,9 @@ func (p *Plan) Execute() (errOccured bool, errorDescs []string, errs []error) {
 				errs = append(errs, err)
 				continue
 			}
-		case 1:
-			err := os.Rename(job.SourcePath, job.DstPath)
-			if err != nil {
-				errOccured = true
-				errorDescs = append(errorDescs, "Error while moving "+job.SourcePath+" to "+job.DstPath)
-				errs = append(errs, err)
-				continue
-			}
 		case 3: // the same as 1 but special
+			fallthrough
+		case 1:
 			err := os.Rename(job.SourcePath, job.DstPath)
 			if err != nil {
 				errOccured = true
