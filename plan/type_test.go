@@ -2,6 +2,7 @@ package plan
 
 import (
 	"os"
+	"reflect"
 	"testing"
 
 	j "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
@@ -67,7 +68,7 @@ func TestExecuteRename(t *testing.T) {
 func TestExecuteRenameFails(t *testing.T) {
 	var p Plan
 	p.jobs = []j.JobDescriptor{{
-		Action:     1,
+		Action:     3,
 		SourcePath: "1",
 	}}
 
@@ -111,6 +112,21 @@ func TestExecuteMkdirFails(t *testing.T) {
 
 	errOcc, descs, errs := p.Execute()
 	if !errOcc && len(descs) == 0 && len(errs) == 0 {
+		t.Fail()
+	}
+}
+
+func TestReturnFileListAbsolute(t *testing.T) {
+	var p Plan
+	p.AbsolutePaths = true
+	p.InFiles = []string{
+		"this does not exist",
+		"please, make me relative!",
+		"No!!! don't do it! this is the function for absolute paths\n and it should just be returned!",
+	}
+
+	returnValue := p.GetFileList()
+	if !reflect.DeepEqual(p.InFiles, returnValue) {
 		t.Fail()
 	}
 }
