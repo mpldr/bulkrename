@@ -53,3 +53,16 @@ sonarcloud-check:
     - merge_requests
     - master
     - develop
+    - bugfix/tests
+
+codecov:
+  image:
+    name: golang:latest
+  script:
+    - make cover
+    - bash <(curl -s https://codecov.io/bash)
+  only:
+    - merge_requests
+    - master
+    - develop
+    - bugfix/tests
