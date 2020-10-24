@@ -1,6 +1,6 @@
 # bulkrename
 
-![codecov](https://codecov.io/gl/poldi1405/bulkrename/branch/develop/graph/badge.svg?token=656MXKJG7U)
+[![codecov](https://codecov.io/gl/poldi1405/bulkrename/branch/develop/graph/badge.svg?token=656MXKJG7U)](https://codecov.io/gl/poldi1405/bulkrename/)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=poldi1405_bulkrename&metric=alert_status)](https://sonarcloud.io/dashboard?id=poldi1405_bulkrename)
 
