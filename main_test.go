@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"github.com/mborders/logmatic"
+	"reflect"
 	. "testing"
 
 	cli "github.com/jawher/mow.cli"
@@ -46,4 +48,15 @@ func TestCLISetup(t *T) {
 			t.Fail()
 		}
 	}*/
+}
+
+func TestSetupLoggingDefault(t *T){
+	cmplogger := logmatic.NewLogger()
+	cmplogger.SetLevel(logmatic.WARN)
+	l = logmatic.NewLogger()
+
+	setupLogging()
+	if !reflect.DeepEqual(l, cmplogger){
+		t.Fail()
+	}
 }

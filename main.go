@@ -32,42 +32,13 @@ var (
 func main() {
 	br := cli.App("br", "Rename files in a bulk")
 	l = logmatic.NewLogger()
-	trace := os.Getenv("BR_ENABLE_TRACE")
-	if len(trace) > 0 {
-		l.SetLevel(logmatic.TRACE)
-		l.Debug("LogLevel set to TRACE")
-	} else {
-		l.SetLevel(logmatic.WARN)
-	}
+
+	setupLogging()
 
 	setupCLI(br)
 
 	br.Action = func() {
-		switch *loglevel {
-		case "trace":
-			l.Debug("Set LogLevel to TRACE")
-			l.SetLevel(logmatic.TRACE)
-
-		case "debug":
-			l.Debug("Set LogLevel to DEBUG")
-			l.SetLevel(logmatic.DEBUG)
-
-		case "info":
-			l.Debug("Set LogLevel to INFO")
-			l.SetLevel(logmatic.INFO)
-
-		case "error":
-			l.Debug("Set LogLevel to ERROR")
-			l.SetLevel(logmatic.ERROR)
-
-		case "fatal":
-			l.Debug("Set LogLevel to FATAL")
-			l.SetLevel(logmatic.FATAL)
-		}
-		if len(trace) > 0 {
-			l.SetLevel(logmatic.TRACE)
-			l.Debug("Reset LogLevel to TRACE because BR_ENABLE_TRACE is set")
-		}
+		setupLogging()
 
 		plan.L = l
 
@@ -209,4 +180,42 @@ func setupCLI(br *cli.Cli) {
 		Desc: "the source files that will be added to the editor",
 	})
 
+}
+
+func setupLogging() {
+	trace := os.Getenv("BR_ENABLE_TRACE")
+	if len(trace) > 0 {
+		l.SetLevel(logmatic.TRACE)
+		l.Debug("LogLevel set to TRACE")
+		return
+	}
+	if loglevel == nil {
+		l.SetLevel(logmatic.WARN)
+		return
+	}
+
+	switch *loglevel {
+	case "trace":
+		l.Debug("Set LogLevel to TRACE")
+		l.SetLevel(logmatic.TRACE)
+
+	case "debug":
+		l.Debug("Set LogLevel to DEBUG")
+		l.SetLevel(logmatic.DEBUG)
+
+	case "info":
+		l.Debug("Set LogLevel to INFO")
+		l.SetLevel(logmatic.INFO)
+
+	case "error":
+		l.Debug("Set LogLevel to ERROR")
+		l.SetLevel(logmatic.ERROR)
+
+	case "fatal":
+		l.Debug("Set LogLevel to FATAL")
+		l.SetLevel(logmatic.FATAL)
+	default:
+		l.Debug("Set LogLevel to WARN")
+		l.SetLevel(logmatic.WARN)
+	}
 }
