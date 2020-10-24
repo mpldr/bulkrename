@@ -44,21 +44,7 @@ func main() {
 
 		l.Info("setting up plan")
 		jobplan := plan.NewPlan()
-
-		jobplan.AbsolutePaths = *absolute
-		l.Debug("set AbsolutePaths to " + strconv.FormatBool(*absolute))
-		jobplan.Overwrite = overwrite
-		l.Debug("set Overwrite to " + strconv.FormatBool(overwrite))
-		jobplan.Editor = *editor
-		l.Debug("set Editor to " + *editor)
-		jobplan.EditorArgs = *args
-		l.Debug("set EditorArgs to " + strings.Join(*args, ", "))
-		jobplan.CreateDirs = mkdir
-		l.Debug("set CreateDirs to " + strconv.FormatBool(mkdir))
-		jobplan.StopToShow = *check
-		l.Debug("set StopToShow to " + strconv.FormatBool(*check))
-		jobplan.DeleteEmpty = *delem
-		l.Debug("set DeleteEmpty to " + strconv.FormatBool(*delem))
+		setJobplanSettings(jobplan)
 
 		l.Info("cleaning input")
 		*files = RemoveInvalidEntries(*files)
@@ -188,7 +174,7 @@ func setupLogging() logmatic.LogLevel {
 		l.Debug("LogLevel set to TRACE")
 		return logmatic.TRACE
 	}
-	if loglevel == nil {
+	if loglevel == nil || *loglevel == "" {
 		return logmatic.WARN
 	}
 
@@ -216,4 +202,22 @@ func setupLogging() logmatic.LogLevel {
 		l.Debug("Set LogLevel to WARN")
 		return logmatic.WARN
 	}
+}
+
+func setJobplanSettings(jobplan *plan.Plan) {
+	jobplan.AbsolutePaths = *absolute
+	l.Debug("set AbsolutePaths to " + strconv.FormatBool(*absolute))
+	jobplan.Overwrite = overwrite
+	l.Debug("set Overwrite to " + strconv.FormatBool(overwrite))
+	jobplan.Editor = *editor
+	l.Debug("set Editor to " + *editor)
+	jobplan.EditorArgs = *args
+	l.Debug("set EditorArgs to " + strings.Join(*args, ", "))
+	jobplan.CreateDirs = mkdir
+	l.Debug("set CreateDirs to " + strconv.FormatBool(mkdir))
+	jobplan.StopToShow = *check
+	l.Debug("set StopToShow to " + strconv.FormatBool(*check))
+	jobplan.DeleteEmpty = *delem
+	l.Debug("set DeleteEmpty to " + strconv.FormatBool(*delem))
+
 }

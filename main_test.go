@@ -2,9 +2,12 @@ package main
 
 import (
 	"flag"
+	"os"
+	"reflect"
 	. "testing"
 
 	"github.com/mborders/logmatic"
+	"gitlab.com/poldi1405/bulkrename/plan"
 
 	cli "github.com/jawher/mow.cli"
 )
@@ -53,7 +56,23 @@ func TestCLISetup(t *T) {
 func TestSetupLoggingDefault(t *T) {
 	l = logmatic.NewLogger()
 
+	orig := *loglevel
+	*loglevel = ""
+	defer func() { *loglevel = orig }()
+
 	if setupLogging() != logmatic.WARN {
+		t.Fail()
+	}
+}
+
+func TestSetupLoggingEnvVar(t *T) {
+	l = logmatic.NewLogger()
+
+	orig := os.Getenv("BR_ENABLE_TRACE")
+	os.Setenv("BR_ENABLE_TRACE", "not empty")
+	defer os.Setenv("BR_ENABLE_TRACE", orig)
+
+	if setupLogging() != logmatic.TRACE {
 		t.Fail()
 	}
 }
@@ -88,6 +107,42 @@ func TestSetupLoggingValues(t *T) {
 	*loglevel = "other"
 
 	if setupLogging() != logmatic.WARN {
+		t.Fail()
+	}
+}
+
+func TestSetupPlan(t *T) {
+	p := plan.NewPlan()
+
+	*absolute = true
+	overwrite = true
+	*editor = "notepad++"
+	*args = []string{"my", "list", "of", "args"}
+	mkdir = true
+	*check = true
+	*delem = true
+
+	setJobplanSettings(p)
+	if p.AbsolutePaths != *absolute || p.Overwrite != overwrite ||
+		p.Editor != *editor || !reflect.DeepEqual(p.EditorArgs, *args) ||
+		p.CreateDirs != mkdir || p.StopToShow != *check ||
+		p.DeleteEmpty != *delem {
+		t.Fail()
+	}
+
+	*absolute = false
+	overwrite = false
+	*editor = "notepad++"
+	*args = []string{"this", "is", "a", "different", "list"}
+	mkdir = false
+	*check = false
+	*delem = false
+
+	setJobplanSettings(p)
+	if p.AbsolutePaths != *absolute || p.Overwrite != overwrite ||
+		p.Editor != *editor || !reflect.DeepEqual(p.EditorArgs, *args) ||
+		p.CreateDirs != mkdir || p.StopToShow != *check ||
+		p.DeleteEmpty != *delem {
 		t.Fail()
 	}
 }
