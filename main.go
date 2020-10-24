@@ -33,12 +33,12 @@ func main() {
 	br := cli.App("br", "Rename files in a bulk")
 	l = logmatic.NewLogger()
 
-	setupLogging()
+	l.SetLevel(setupLogging())
 
 	setupCLI(br)
 
 	br.Action = func() {
-		setupLogging()
+		l.SetLevel(setupLogging())
 
 		plan.L = l
 
@@ -182,40 +182,38 @@ func setupCLI(br *cli.Cli) {
 
 }
 
-func setupLogging() {
+func setupLogging() logmatic.LogLevel {
 	trace := os.Getenv("BR_ENABLE_TRACE")
 	if len(trace) > 0 {
-		l.SetLevel(logmatic.TRACE)
 		l.Debug("LogLevel set to TRACE")
-		return
+		return logmatic.TRACE
 	}
 	if loglevel == nil {
-		l.SetLevel(logmatic.WARN)
-		return
+		return logmatic.WARN
 	}
 
 	switch *loglevel {
 	case "trace":
 		l.Debug("Set LogLevel to TRACE")
-		l.SetLevel(logmatic.TRACE)
+		return logmatic.TRACE
 
 	case "debug":
 		l.Debug("Set LogLevel to DEBUG")
-		l.SetLevel(logmatic.DEBUG)
+		return logmatic.DEBUG
 
 	case "info":
 		l.Debug("Set LogLevel to INFO")
-		l.SetLevel(logmatic.INFO)
+		return logmatic.INFO
 
 	case "error":
 		l.Debug("Set LogLevel to ERROR")
-		l.SetLevel(logmatic.ERROR)
+		return logmatic.ERROR
 
 	case "fatal":
 		l.Debug("Set LogLevel to FATAL")
-		l.SetLevel(logmatic.FATAL)
+		return logmatic.FATAL
 	default:
 		l.Debug("Set LogLevel to WARN")
-		l.SetLevel(logmatic.WARN)
+		return logmatic.WARN
 	}
 }
