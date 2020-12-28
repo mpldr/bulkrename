@@ -287,9 +287,8 @@ func TestLoadFileListFails(t *testing.T) {
 		t.Skip()
 	}
 
-	m := make(map[string]bool)
-	for i := 0; i < len(filelist); i++ {
-		m[cwd+string(os.PathSeparator)+filelist[i]] = true
+	if len(p.InFiles) == 1 && p.InFiles[0] == cwd+string(os.PathSeparator)+filelist[0] {
+		t.Skipf("seems like Chmod failed. Skipping test.")
 	}
 
 	if len(p.InFiles) != 0 {
