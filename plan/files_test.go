@@ -51,7 +51,7 @@ func TestRecursiveFileList(t *testing.T) {
 	}()
 
 	wg.Add(1)
-	_ = p.listAllFiles("test")
+	p.listAllFiles("test")
 	wg.Wait()
 
 	result := p.InFiles

@@ -10,8 +10,8 @@ endif
 
 check:
 	gofmt -s -w -l .
+	golangci-lint run
 	gocyclo -over 15 -avg .
-	golint -set_exit_status ./...
 
 
 test:
@@ -47,3 +47,8 @@ release: clean doc
 	env GOOS=windows go build -ldflags="-s -w -X main.buildVersion=${VERSION}" -trimpath -buildmode=pie -o pkg/windows/br.exe
 	cp documentation/manpage.1.html pkg/windows/user_guide.html
 	cd pkg/windows/; zip ../../releases/windows_x64_${VERSION}.zip *; cd ../../
+
+prepare:
+	go get -v github.com/golangci/golangci-lint@v1.33.1
+	go get -v github.com/fzipp/gocyclo/cmd/gocyclo
+	go mod tidy

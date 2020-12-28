@@ -46,6 +46,8 @@ sonarcloud-check:
     paths:
       - .sonar/cache
   script:
+    - apk add go
+    - go test -coverprofile coverage.out ./...
     - sonar-scanner
   only:
     - merge_requests

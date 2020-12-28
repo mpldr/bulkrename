@@ -1,0 +1,30 @@
+ version: '1'
+ image: golang:latest
+ jobs:
+   check:
+     when:
+       branch:
+         exclude:
+           - master
+     script:
+       - make check
+     allowFailure: true
+
+   test:
+     script:
+       - make test
+
+   build:
+     script:
+       - make build
+     dependencies:
+       - test
+
+   release:
+     when:
+       branch:
+         - master
+     script:
+       - make publish
+     dependencies:
+       - build
