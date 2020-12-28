@@ -165,6 +165,135 @@ func TestWriteTempFile(t *testing.T) {
 	}
 }
 
-func TestLoadFileListRecursive(t *testing.T) {
+func TestLoadFileList(t *testing.T) {
+	var p Plan
+	L = logmatic.NewLogger()
+	L.SetLevel(logmatic.LogLevel(42))
+	L.SetLevel(logmatic.FATAL)
 
+	if err := os.MkdirAll("test/not_allowed", 0700); err != nil {
+		t.Error(err)
+	}
+
+	if err := os.MkdirAll("test/allowed_but_empty", 0700); err != nil {
+		t.Error(err)
+	}
+
+	defer func() {
+		err := os.RemoveAll("test")
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+
+	_, err := os.Create("test/ok")
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = os.Create("test/ok2")
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = os.Create("test/not_allowed/permdenied")
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = os.Chmod("test/not_allowed", 0000)
+	if err != nil {
+		t.Error(err)
+	}
+	defer func() {
+		err := os.Chmod("test/not_allowed", 0700)
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+	filelist := []string{"test/ok", "test/ok2", "test/allowed_but_empty"}
+	p.LoadFileList(filelist, false)
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Log(err)
+		t.Skip()
+	}
+
+	m := make(map[string]bool)
+	for i := 0; i < len(filelist); i++ {
+		m[cwd+string(os.PathSeparator)+filelist[i]] = true
+	}
+
+	for _, f := range p.InFiles {
+		if _, ok := m[f]; !ok {
+			t.Log(m)
+			t.Log("found unknown " + f)
+			t.Fail()
+		}
+	}
+}
+
+func TestLoadFileListFails(t *testing.T) {
+	var p Plan
+	L = logmatic.NewLogger()
+	L.SetLevel(logmatic.LogLevel(42))
+	L.SetLevel(logmatic.FATAL)
+
+	if err := os.MkdirAll("test/not_allowed", 0700); err != nil {
+		t.Error(err)
+	}
+
+	if err := os.MkdirAll("test/allowed_but_empty", 0700); err != nil {
+		t.Error(err)
+	}
+
+	defer func() {
+		err := os.RemoveAll("test")
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+
+	_, err := os.Create("test/ok")
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = os.Create("test/ok2")
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = os.Create("test/not_allowed/permdenied")
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = os.Chmod("test/not_allowed", 0000)
+	if err != nil {
+		t.Error(err)
+	}
+	defer func() {
+		err := os.Chmod("test/not_allowed", 0700)
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+	filelist := []string{"test/not_allowed/permdenied"}
+	p.LoadFileList(filelist, false)
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Log(err)
+		t.Skip()
+	}
+
+	m := make(map[string]bool)
+	for i := 0; i < len(filelist); i++ {
+		m[cwd+string(os.PathSeparator)+filelist[i]] = true
+	}
+
+	if len(p.InFiles) != 0 {
+		t.Log(p.InFiles)
+		t.Fail()
+	}
 }

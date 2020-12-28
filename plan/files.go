@@ -74,7 +74,6 @@ func (p *Plan) listAllFiles(start string) {
 		L.Debug("Found " + path)
 		if err != nil {
 			L.Debug("Error passed " + err.Error())
-			return err
 		}
 
 		if info == nil {
@@ -114,7 +113,7 @@ func (p *Plan) listAllFiles(start string) {
 		return nil
 	})
 	if err != nil {
-		return
+		L.Debug("error occurred: " + err.Error())
 	}
 	done = true
 

@@ -101,34 +101,14 @@ func (p *Plan) PrepareExecution() error {
 			if _, exists := assumeExisting[dir]; exists {
 				continue
 			}
-
-			// if the containing folder doesn't exist, create it
-			d, err := os.Open(dir)
-			if os.IsNotExist(err) && p.CreateDirs {
-				prerules = append(prerules, JobDescriptor{Action: 2, DstPath: dir + string(os.PathSeparator)})
-				d.Close()
-				continue
-			} else if os.IsNotExist(err) {
-				return dirCreationNotAllowed
-			} else if err != nil {
-				d.Close()
+			pre, err := p.prepareFile(job, dir)
+			if err != nil {
 				return err
 			}
+			prerules = append(prerules, pre...)
 
-			dfi, err := d.Stat()
-			d.Close()
-			if err != nil {
-				continue
-			}
-
-			// if it is not a directory but a file, delete (overwrite) it and remake it as a directory
-			if !dfi.IsDir() && p.CreateDirs && p.Overwrite {
-				prerules = append(prerules, JobDescriptor{Action: -1, SourcePath: dir})
-				prerules = append(prerules, JobDescriptor{Action: 2, SourcePath: dir})
-			} else if !dfi.IsDir() && !(p.CreateDirs && p.Overwrite) { // if overwriting or creating directories is not allowed
-				return multipleChoiceNotAllowed
-			}
 			assumeExisting[dir] = true
+
 		} else {
 			dst := job.DstPath
 			//dst := strings.TrimSuffix(job.DstPath, string(os.PathSeparator))
@@ -219,4 +199,35 @@ func (p *Plan) PreviewPlan() {
 			fmt.Printf(ansi.Yellow("rcvr  :")+" %v "+ansi.Blue("⮕")+" %v\n", job.SourcePath, job.DstPath)
 		}
 	}
+}
+
+func (p *Plan) prepareFile(job JobDescriptor, dir string) ([]JobDescriptor, error) {
+	var prerules []JobDescriptor
+	// if the containing folder doesn't exist, create it
+	d, err := os.Open(dir)
+	if os.IsNotExist(err) && p.CreateDirs {
+		prerules = append(prerules, JobDescriptor{Action: 2, DstPath: dir + string(os.PathSeparator)})
+		d.Close()
+		return prerules, nil
+	} else if os.IsNotExist(err) {
+		return nil, dirCreationNotAllowed
+	} else if err != nil {
+		d.Close()
+		return nil, err
+	}
+
+	dfi, err := d.Stat()
+	d.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	// if it is not a directory but a file, delete (overwrite) it and remake it as a directory
+	if !dfi.IsDir() && p.CreateDirs && p.Overwrite {
+		prerules = append(prerules, JobDescriptor{Action: -1, SourcePath: dir})
+		prerules = append(prerules, JobDescriptor{Action: 2, SourcePath: dir})
+	} else if !dfi.IsDir() && !(p.CreateDirs && p.Overwrite) { // if overwriting or creating directories is not allowed
+		return nil, multipleChoiceNotAllowed
+	}
+	return prerules, nil
 }

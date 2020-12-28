@@ -19,6 +19,7 @@ test:
 
 cover:
 	go test -v -coverprofile=coverage.out -covermode=atomic -race ./...
+	go tool cover -html=coverage.out
 
 show:
 	go test -coverprofile=coverage.out -covermode=atomic -race ./...
