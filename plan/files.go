@@ -56,23 +56,27 @@ func (p *Plan) LoadFileList(files []string, recursive bool) {
 	p.inFilesMtx.Unlock()
 }
 
-func (p *Plan) listAllFiles(start string) error {
+func (p *Plan) listAllFiles(start string) {
 	var done bool
 	defer wg.Done()
 
 	go func() {
-		select {
-		case <-time.After(2 * time.Second):
-			if !done {
-				L.Debug("2 seconds elapsed, issuing warning")
-				L.Warn(fmt.Sprintf("Scanning %v takes a long time. Please be patient.", start))
-			}
+		<-time.After(2 * time.Second)
+		if !done {
+			L.Debug("2 seconds elapsed, issuing warning")
+			L.Warn(fmt.Sprintf("Scanning %v takes a long time. Please be patient.", start))
 		}
+
 	}()
 	var files []string
 
 	err := filepath.Walk(start, func(path string, info os.FileInfo, err error) error {
 		L.Debug("Found " + path)
+		if err != nil {
+			L.Debug("Error passed " + err.Error())
+			return err
+		}
+
 		if info == nil {
 			L.Trace("dafuq @ " + path)
 			return nil
@@ -110,25 +114,23 @@ func (p *Plan) listAllFiles(start string) error {
 		return nil
 	})
 	if err != nil {
-		return err
+		return
 	}
 	done = true
 
 	p.inFilesMtx.Lock()
 	p.InFiles = append(p.InFiles, files...)
 	p.inFilesMtx.Unlock()
-
-	return nil
 }
 
 func (p *Plan) writeTempFile() error {
 	f, err := os.Create(p.TempFile())
-	defer f.Close()
 	if err != nil {
 		L.Error("Unable to create temporary file")
 		L.Info("Error: " + err.Error())
 		return err
 	}
+	defer f.Close()
 	for _, v := range p.GetFileList() {
 		fmt.Fprintln(f, v)
 		if err != nil {
