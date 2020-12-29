@@ -11,7 +11,7 @@ build:
 check:
 	gofmt -s -w -l .
 	$(GOBIN)golangci-lint run
-	$(GOBIN)gocyclo -over 15 -avg .
+	$(GOBIN)gocyclo -over 15 -avg -ignore "_test|Godeps|vendor/" .
 
 
 test:
