@@ -41,6 +41,7 @@ all: test build doc
 release: build doc
 
 prepare:
+	mkdir -p $(GOBIN)
 	go get -v github.com/golangci/golangci-lint@v1.33.1 -o $(GOBIN)golangci-lint$(GOEXE)
 	go get -v github.com/fzipp/gocyclo/cmd/gocyclo -o $(GOBIN)gocyclo$(GOEXE)
 	go mod tidy
