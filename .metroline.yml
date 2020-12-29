@@ -2,6 +2,7 @@
  image: golang:latest
  jobs:
    check:
+     image: golangci/golangci-lint
      when:
        branch:
          exclude:
