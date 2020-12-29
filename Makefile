@@ -13,16 +13,11 @@ check:
 	$(GOBIN)gocyclo -over 15 -avg -ignore "_test|Godeps|vendor/" .
 	$(GOBIN)golangci-lint run
 
-
 test:
 	go test -v -cover -race ./...
 
 cover:
 	go test -v -coverprofile=coverage.out -covermode=atomic -race ./...
-	go tool cover -html=coverage.out
-
-show:
-	go test -coverprofile=coverage.out -covermode=atomic -race ./...
 	go tool cover -html=coverage.out
 
 doc:

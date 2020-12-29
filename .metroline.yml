@@ -9,6 +9,7 @@
            - master
      script:
        - make prepare
+       - cp /usr/bin/golangci-lint /go/bin/
        - make check
      allowFailure: true
 
