@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	. "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
+	j "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
 	"gitlab.com/poldi1405/go-ansi"
 )
 
@@ -49,10 +49,10 @@ func (p *Plan) CreatePlan(planfile string) error {
 	for i, file := range p.InFiles {
 		if i >= len(p.OutFiles) || p.OutFiles[i] == "" { // the line is empty
 			if p.DeleteEmpty {
-				p.jobs = append(p.jobs, JobDescriptor{Action: -1, SourcePath: file})
+				p.jobs = append(p.jobs, j.JobDescriptor{Action: -1, SourcePath: file})
 			}
 		} else if file != p.OutFiles[i] { // the line is changed
-			p.jobs = append(p.jobs, JobDescriptor{Action: 1, SourcePath: file, DstPath: p.OutFiles[i]})
+			p.jobs = append(p.jobs, j.JobDescriptor{Action: 1, SourcePath: file, DstPath: p.OutFiles[i]})
 		}
 	}
 
@@ -119,12 +119,12 @@ func (p *Plan) PrepareExecution() error {
 
 			_, err := os.Stat(dst)
 			if os.IsNotExist(err) && p.CreateDirs {
-				prerules = append(prerules, JobDescriptor{Action: 2, DstPath: dst})
+				prerules = append(prerules, j.JobDescriptor{Action: 2, DstPath: dst})
 			} else if os.IsNotExist(err) {
 				L.Error("Destination does not exist")
 				L.Trace("Destination:" + dst)
 				L.Info("Error:" + err.Error())
-				return dirCreationNotAllowed
+				return errDirCreationNotAllowed
 			} else if err != nil {
 				L.Error("There is an issue with the destination directory")
 				L.Trace("Destination:" + dst)
@@ -140,8 +140,8 @@ func (p *Plan) PrepareExecution() error {
 }
 
 // findCollisions scans for file-switching. If there is a loop, break it.
-func (p *Plan) findCollisions() []JobDescriptor {
-	var prerules []JobDescriptor
+func (p *Plan) findCollisions() []j.JobDescriptor {
+	var prerules []j.JobDescriptor
 
 	destinations := make(map[string]struct{})
 
@@ -166,7 +166,7 @@ func (p *Plan) findCollisions() []JobDescriptor {
 			}
 			L.Debug("Collision found, moving from " + p.jobs[i].SourcePath + " to " + safePath)
 
-			moveToSafety := JobDescriptor{
+			moveToSafety := j.JobDescriptor{
 				Action:     1,
 				SourcePath: p.jobs[i].SourcePath,
 				DstPath:    safePath,
@@ -201,16 +201,16 @@ func (p *Plan) PreviewPlan() {
 	}
 }
 
-func (p *Plan) prepareFile(job JobDescriptor, dir string) ([]JobDescriptor, error) {
-	var prerules []JobDescriptor
+func (p *Plan) prepareFile(job j.JobDescriptor, dir string) ([]j.JobDescriptor, error) {
+	var prerules []j.JobDescriptor
 	// if the containing folder doesn't exist, create it
 	d, err := os.Open(dir)
 	if os.IsNotExist(err) && p.CreateDirs {
-		prerules = append(prerules, JobDescriptor{Action: 2, DstPath: dir + string(os.PathSeparator)})
+		prerules = append(prerules, j.JobDescriptor{Action: 2, DstPath: dir + string(os.PathSeparator)})
 		d.Close()
 		return prerules, nil
 	} else if os.IsNotExist(err) {
-		return nil, dirCreationNotAllowed
+		return nil, errDirCreationNotAllowed
 	} else if err != nil {
 		d.Close()
 		return nil, err
@@ -224,10 +224,10 @@ func (p *Plan) prepareFile(job JobDescriptor, dir string) ([]JobDescriptor, erro
 
 	// if it is not a directory but a file, delete (overwrite) it and remake it as a directory
 	if !dfi.IsDir() && p.CreateDirs && p.Overwrite {
-		prerules = append(prerules, JobDescriptor{Action: -1, SourcePath: dir})
-		prerules = append(prerules, JobDescriptor{Action: 2, SourcePath: dir})
+		prerules = append(prerules, j.JobDescriptor{Action: -1, SourcePath: dir})
+		prerules = append(prerules, j.JobDescriptor{Action: 2, SourcePath: dir})
 	} else if !dfi.IsDir() && !(p.CreateDirs && p.Overwrite) { // if overwriting or creating directories is not allowed
-		return nil, multipleChoiceNotAllowed
+		return nil, errMultipleChoiceNotAllowed
 	}
 	return prerules, nil
 }

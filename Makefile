@@ -37,7 +37,7 @@ all: test build doc
 release: build doc
 
 prepare:
-	go get -v github.com/golangci/golangci-lint@v1.33.1
-	go get -v github.com/fzipp/gocyclo/cmd/gocyclo
-	go get -v golang.org/x/lint/golint
-	go mod tidy
+	@go get -v github.com/golangci/golangci-lint@v1.33.1
+	@go get -v github.com/fzipp/gocyclo/cmd/gocyclo
+	@go get -v golang.org/x/lint/golint
+	@go mod tidy

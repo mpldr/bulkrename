@@ -255,7 +255,7 @@ func TestFailBecauseActionForbidden(t *testing.T) {
 	p.Overwrite = false
 	p.CreateDirs = false
 	err = p.PrepareExecution()
-	if err != multipleChoiceNotAllowed {
+	if err != errMultipleChoiceNotAllowed {
 		t.Error("did not fail when overwriting and creating directories is forbidden")
 	}
 
@@ -264,7 +264,7 @@ func TestFailBecauseActionForbidden(t *testing.T) {
 	p.Overwrite = false
 	p.CreateDirs = true
 	err = p.PrepareExecution()
-	if err != multipleChoiceNotAllowed {
+	if err != errMultipleChoiceNotAllowed {
 		t.Error("did not fail when only overwriting is forbidden")
 		if err != nil {
 			t.Log(err)
@@ -276,7 +276,7 @@ func TestFailBecauseActionForbidden(t *testing.T) {
 	p.Overwrite = true
 	p.CreateDirs = false
 	err = p.PrepareExecution()
-	if err == dirCreationNotAllowed {
+	if err == errDirCreationNotAllowed {
 		t.Error("did not fail when only creating directories is forbidden")
 	}
 }
@@ -308,7 +308,7 @@ func TestFailBecauseMkdirForbidden(t *testing.T) {
 	p.Overwrite = true
 	p.CreateDirs = false
 	err = p.PrepareExecution()
-	if err != dirCreationNotAllowed {
+	if err != errDirCreationNotAllowed {
 		t.Error("did not fail when directories is forbidden")
 	}
 }

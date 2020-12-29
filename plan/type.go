@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/mborders/logmatic"
-	. "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
+	j "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
 )
 
 // Plan stores all information on a rename-job. and provides related funtions.
@@ -39,7 +39,7 @@ type Plan struct {
 	// inFilesMtx is a Mutex to ensure that there are no issues when appending to the filelist
 	inFilesMtx sync.Mutex
 	// jobs contains the tasks that have to be executed in order for the target state to be reached
-	jobs []JobDescriptor
+	jobs []j.JobDescriptor
 }
 
 // L contains the Logger used to log stuff
