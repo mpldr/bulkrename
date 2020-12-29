@@ -10,7 +10,6 @@ build:
 
 check:
 	gofmt -s -w -l .
-	$(GOBIN)golangci-lint run
 	$(GOBIN)gocyclo -over 15 -avg -ignore "_test|Godeps|vendor/" .
 
 
@@ -41,8 +40,6 @@ all: test build doc
 release: build doc
 
 prepare:
-	mkdir -p $(GOBIN)
-	go get -v github.com/golangci/golangci-lint@v1.33.1 -o golangci-lint$(GOEXE)
-	go get -v github.com/fzipp/gocyclo/cmd/gocyclo -o gocyclo$(GOEXE)
+	go get -v github.com/golangci/golangci-lint@v1.33.1
+	go get -v github.com/fzipp/gocyclo/cmd/gocyclo
 	go mod tidy
-	mv golangci-lint$(GOEXE) gocyclo$(GOEXE) $(GOBIN)
