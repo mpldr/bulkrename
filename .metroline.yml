@@ -1,0 +1,43 @@
+ version: '1'
+ image: golang:latest
+ jobs:
+   check:
+     image: golangci/golangci-lint
+     when:
+       branch:
+         exclude:
+           - master
+     script:
+       - make prepare
+       - cp /usr/bin/golangci-lint /go/bin/
+       - make check
+     allowFailure: true
+
+   test:
+     script:
+       - make test
+   
+   submit-cov:
+     bin: bash
+     env:
+       CODECOV_TOKEN: {{CODECOV_TOKEN}}
+     script:
+       - make cover
+       - bash <(curl -s https://codecov.io/bash)
+     dependencies:
+       - test
+
+   build:
+     script:
+       - make build
+     dependencies:
+       - test
+
+   release:
+     when:
+       branch:
+         - master
+     script:
+       - make publish
+     dependencies:
+       - build

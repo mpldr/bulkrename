@@ -136,7 +136,12 @@ func TestFailGetAbsolutePath(t *testing.T) {
 	if err != nil {
 		t.Skipf(err.Error())
 	}
-	defer os.Chdir(pwd)
+	defer func() {
+		err := os.Chdir(pwd)
+		if err != nil {
+			t.Log(err)
+		}
+	}()
 
 	f, err := os.Create(pwd + "test.txt")
 	if err != nil {

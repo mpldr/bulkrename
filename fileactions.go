@@ -18,9 +18,6 @@ func RemoveInvalidEntries(files []string) []string {
 		} else if os.IsPermission(err) {
 			l.Error(fmt.Sprintf("Access to %v denied", file))
 			l.Info("Error: " + err.Error())
-		} else if os.IsTimeout(err) {
-			l.Error("Timeout while accessing " + file)
-			l.Info("Error: " + err.Error())
 		} else if err != nil {
 			l.Error("Error while accessing File")
 			l.Info("Error: " + err.Error())

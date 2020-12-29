@@ -32,62 +32,19 @@ var (
 func main() {
 	br := cli.App("br", "Rename files in a bulk")
 	l = logmatic.NewLogger()
-	trace := os.Getenv("BR_ENABLE_TRACE")
-	if len(trace) > 0 {
-		l.SetLevel(logmatic.TRACE)
-		l.Debug("LogLevel set to TRACE")
-	} else {
-		l.SetLevel(logmatic.WARN)
-	}
+
+	l.SetLevel(setupLogging())
 
 	setupCLI(br)
 
 	br.Action = func() {
-		switch *loglevel {
-		case "trace":
-			l.Debug("Set LogLevel to TRACE")
-			l.SetLevel(logmatic.TRACE)
-
-		case "debug":
-			l.Debug("Set LogLevel to DEBUG")
-			l.SetLevel(logmatic.DEBUG)
-
-		case "info":
-			l.Debug("Set LogLevel to INFO")
-			l.SetLevel(logmatic.INFO)
-
-		case "error":
-			l.Debug("Set LogLevel to ERROR")
-			l.SetLevel(logmatic.ERROR)
-
-		case "fatal":
-			l.Debug("Set LogLevel to FATAL")
-			l.SetLevel(logmatic.FATAL)
-		}
-		if len(trace) > 0 {
-			l.SetLevel(logmatic.TRACE)
-			l.Debug("Reset LogLevel to TRACE because BR_ENABLE_TRACE is set")
-		}
+		l.SetLevel(setupLogging())
 
 		plan.L = l
 
 		l.Info("setting up plan")
 		jobplan := plan.NewPlan()
-
-		jobplan.AbsolutePaths = *absolute
-		l.Debug("set AbsolutePaths to " + strconv.FormatBool(*absolute))
-		jobplan.Overwrite = overwrite
-		l.Debug("set Overwrite to " + strconv.FormatBool(overwrite))
-		jobplan.Editor = *editor
-		l.Debug("set Editor to " + *editor)
-		jobplan.EditorArgs = *args
-		l.Debug("set EditorArgs to " + strings.Join(*args, ", "))
-		jobplan.CreateDirs = mkdir
-		l.Debug("set CreateDirs to " + strconv.FormatBool(mkdir))
-		jobplan.StopToShow = *check
-		l.Debug("set StopToShow to " + strconv.FormatBool(*check))
-		jobplan.DeleteEmpty = *delem
-		l.Debug("set DeleteEmpty to " + strconv.FormatBool(*delem))
+		setJobplanSettings(jobplan)
 
 		l.Info("cleaning input")
 		*files = RemoveInvalidEntries(*files)
@@ -208,5 +165,59 @@ func setupCLI(br *cli.Cli) {
 		Name: "FILES",
 		Desc: "the source files that will be added to the editor",
 	})
+
+}
+
+func setupLogging() logmatic.LogLevel {
+	trace := os.Getenv("BR_ENABLE_TRACE")
+	if len(trace) > 0 {
+		l.Debug("LogLevel set to TRACE")
+		return logmatic.TRACE
+	}
+	if loglevel == nil || *loglevel == "" {
+		return logmatic.WARN
+	}
+
+	switch *loglevel {
+	case "trace":
+		l.Debug("Set LogLevel to TRACE")
+		return logmatic.TRACE
+
+	case "debug":
+		l.Debug("Set LogLevel to DEBUG")
+		return logmatic.DEBUG
+
+	case "info":
+		l.Debug("Set LogLevel to INFO")
+		return logmatic.INFO
+
+	case "error":
+		l.Debug("Set LogLevel to ERROR")
+		return logmatic.ERROR
+
+	case "fatal":
+		l.Debug("Set LogLevel to FATAL")
+		return logmatic.FATAL
+	default:
+		l.Debug("Set LogLevel to WARN")
+		return logmatic.WARN
+	}
+}
+
+func setJobplanSettings(jobplan *plan.Plan) {
+	jobplan.AbsolutePaths = *absolute
+	l.Debug("set AbsolutePaths to " + strconv.FormatBool(*absolute))
+	jobplan.Overwrite = overwrite
+	l.Debug("set Overwrite to " + strconv.FormatBool(overwrite))
+	jobplan.Editor = *editor
+	l.Debug("set Editor to " + *editor)
+	jobplan.EditorArgs = *args
+	l.Debug("set EditorArgs to " + strings.Join(*args, ", "))
+	jobplan.CreateDirs = mkdir
+	l.Debug("set CreateDirs to " + strconv.FormatBool(mkdir))
+	jobplan.StopToShow = *check
+	l.Debug("set StopToShow to " + strconv.FormatBool(*check))
+	jobplan.DeleteEmpty = *delem
+	l.Debug("set DeleteEmpty to " + strconv.FormatBool(*delem))
 
 }
