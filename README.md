@@ -23,7 +23,7 @@ br -r ~/NAS/Multimedia/Series/Anime/Psycho-Pass/
 2. To automatically rename all .xml files to \*.drawio
 
 ```
-br --editor vim --arg '+%s/\.xml$/\.drawio/' --arg +x --arg '{}' ~/DrawIO/*
+br --editor sed --arg=-i --arg 's/\.xml$/\.drawio/' --arg '{}' ~/DrawIO/*
 ```
 
 This executes `vim +%s/\.xml$/\.drawio/ +x [Tempfile]`
