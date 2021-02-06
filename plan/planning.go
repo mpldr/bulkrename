@@ -62,7 +62,6 @@ func (p *Plan) CreatePlan(planfile string) error {
 // PrepareExecution creates a set of prerules that need to be executed in order
 // to execute the actual plan.
 func (p *Plan) PrepareExecution() error {
-
 	assumeExisting := make(map[string]bool)
 
 	L.Debug("checking for circular file-movement")
@@ -111,7 +110,7 @@ func (p *Plan) PrepareExecution() error {
 
 		} else {
 			dst := job.DstPath
-			//dst := strings.TrimSuffix(job.DstPath, string(os.PathSeparator))
+			// dst := strings.TrimSuffix(job.DstPath, string(os.PathSeparator))
 			dst = strings.TrimSuffix(dst, filepath.Base(dst))
 			if _, exists := assumeExisting[dst]; exists {
 				continue

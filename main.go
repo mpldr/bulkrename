@@ -89,8 +89,8 @@ func main() {
 			os.Exit(1)
 		}
 
-		//fmt.Println(jobplan.InFiles)
-		//fmt.Printf("recursive: %v\nabsolute: %v\nstop to show: %v\ncreate directories: %v\nuse editor: %v\narguemnts: %v\noverwrite: %v\ndelete empty: %v\nfiles: %v", *recursive, *absolute, *check, mkdir, *editor, *args, overwrite, *delem, *files)
+		// fmt.Println(jobplan.InFiles)
+		// fmt.Printf("recursive: %v\nabsolute: %v\nstop to show: %v\ncreate directories: %v\nuse editor: %v\narguemnts: %v\noverwrite: %v\ndelete empty: %v\nfiles: %v", *recursive, *absolute, *check, mkdir, *editor, *args, overwrite, *delem, *files)
 	}
 	err := br.Run(os.Args)
 	if err != nil {
@@ -165,7 +165,6 @@ func setupCLI(br *cli.Cli) {
 		Name: "FILES",
 		Desc: "the source files that will be added to the editor",
 	})
-
 }
 
 func setupLogging() logmatic.LogLevel {
@@ -219,5 +218,4 @@ func setJobplanSettings(jobplan *plan.Plan) {
 	l.Debug("set StopToShow to " + strconv.FormatBool(*check))
 	jobplan.DeleteEmpty = *delem
 	l.Debug("set DeleteEmpty to " + strconv.FormatBool(*delem))
-
 }

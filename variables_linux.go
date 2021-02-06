@@ -1,6 +1,4 @@
 package main
 
-var (
-	// DefaultEditor contains the OS-specific default editor
-	DefaultEditor = "vi"
-)
+// DefaultEditor contains the OS-specific default editor
+var DefaultEditor = "vi"

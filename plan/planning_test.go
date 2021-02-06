@@ -227,7 +227,7 @@ func TestFailBecauseActionForbidden(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 	var p Plan
-	var reset = func() {
+	reset := func() {
 		p.InFiles = []string{"1"}
 		p.OutFiles = []string{"3/2/1"}
 		p.jobs = []j.JobDescriptor{
@@ -286,7 +286,7 @@ func TestFailBecauseMkdirForbidden(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 	var p Plan
-	var reset = func() {
+	reset := func() {
 		p.InFiles = []string{"1"}
 		p.OutFiles = []string{"2/1"}
 		p.jobs = []j.JobDescriptor{
@@ -318,7 +318,7 @@ func TestCreateMkdirPrerule(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 	var p Plan
-	var reset = func() {
+	reset := func() {
 		p.InFiles = []string{"1"}
 		p.OutFiles = []string{"2/1"}
 		p.jobs = []j.JobDescriptor{
@@ -354,7 +354,7 @@ func TestReplaceFileWithDirectoryPrerules(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 	var p Plan
-	var reset = func() {
+	reset := func() {
 		p.InFiles = []string{"1"}
 		p.OutFiles = []string{"3/1"}
 		p.jobs = []j.JobDescriptor{
@@ -396,7 +396,7 @@ func TestIgnoreRingDetectionRules(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 	var p Plan
-	var reset = func() {
+	reset := func() {
 		p.InFiles = []string{"1"}
 		p.OutFiles = []string{"3/1"}
 		p.jobs = []j.JobDescriptor{
@@ -438,7 +438,7 @@ func TestPlanningSourceFileNotExist(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 	var p Plan
-	var reset = func() {
+	reset := func() {
 		p.InFiles = []string{"1"}
 		p.OutFiles = []string{"3/1"}
 		p.jobs = []j.JobDescriptor{

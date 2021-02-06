@@ -38,6 +38,7 @@ func TestEditEmpty(t *testing.T) {
 		t.Fail()
 	}
 }
+
 func TestEditSuccess(t *testing.T) {
 	L = logmatic.NewLogger()
 	L.SetLevel(logmatic.LogLevel(42))
@@ -51,6 +52,7 @@ func TestEditSuccess(t *testing.T) {
 		t.Fail()
 	}
 }
+
 func TestEditFail(t *testing.T) {
 	L = logmatic.NewLogger()
 	L.ExitOnFatal = false

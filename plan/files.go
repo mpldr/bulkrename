@@ -66,7 +66,6 @@ func (p *Plan) listAllFiles(start string) {
 			L.Debug("2 seconds elapsed, issuing warning")
 			L.Warn(fmt.Sprintf("Scanning %v takes a long time. Please be patient.", start))
 		}
-
 	}()
 	var files []string
 
