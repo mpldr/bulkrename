@@ -126,7 +126,7 @@ func TestFailGetAbsolutePath(t *testing.T) {
 		t.Skipf(err.Error())
 	}
 
-	err = os.Mkdir(pwd+"test_failabspath", 0777)
+	err = os.Mkdir(pwd+"test_failabspath", 0o777)
 	if err != nil {
 		t.Skipf(err.Error())
 	}

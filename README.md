@@ -9,7 +9,7 @@
 ## Installation
 
 ```
-go get -u -v gitlab.com/poldi1405/bulkrename
+go get -u -v git.sr.ht/~poldi1405/bulkrename
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ br -r ~/NAS/Multimedia/Series/Anime/Psycho-Pass/
 br --editor sed --arg=-i --arg 's/\.xml$/\.drawio/' --arg '{}' ~/DrawIO/*
 ```
 
-This executes `vim +%s/\.xml$/\.drawio/ +x [Tempfile]`
+This executes `sed -i 's/\.xml$/\.drawio/' [Tempfile]`
 
 ## Moving forward
 

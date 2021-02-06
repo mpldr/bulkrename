@@ -6,8 +6,8 @@ import (
 	"reflect"
 	. "testing"
 
+	"git.sr.ht/~poldi1405/bulkrename/plan"
 	"github.com/mborders/logmatic"
-	"gitlab.com/poldi1405/bulkrename/plan"
 
 	cli "github.com/jawher/mow.cli"
 )

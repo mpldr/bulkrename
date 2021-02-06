@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"git.sr.ht/~poldi1405/go-ansi"
 	j "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
-	"gitlab.com/poldi1405/go-ansi"
 )
 
 // CreatePlan reads the new filenames from the temporary file

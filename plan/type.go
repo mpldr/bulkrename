@@ -102,7 +102,7 @@ func (p *Plan) Execute() (errOccured bool, errorDescs []string, errs []error) {
 				continue
 			}
 		case 2:
-			err := os.MkdirAll(job.DstPath, 0777)
+			err := os.MkdirAll(job.DstPath, 0o777)
 			if err != nil {
 				errOccured = true
 				errorDescs = append(errorDescs, "Error while creating "+job.SourcePath)

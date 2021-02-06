@@ -14,11 +14,11 @@ func TestRecursiveFileList(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 
-	if err := os.MkdirAll("test/not_allowed", 0700); err != nil {
+	if err := os.MkdirAll("test/not_allowed", 0o700); err != nil {
 		t.Error(err)
 	}
 
-	if err := os.MkdirAll("test/allowed_but_empty", 0700); err != nil {
+	if err := os.MkdirAll("test/allowed_but_empty", 0o700); err != nil {
 		t.Error(err)
 	}
 
@@ -39,12 +39,12 @@ func TestRecursiveFileList(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = os.Chmod("test/not_allowed", 0000)
+	err = os.Chmod("test/not_allowed", 0o000)
 	if err != nil {
 		t.Error(err)
 	}
 	defer func() {
-		err := os.Chmod("test/not_allowed", 0700)
+		err := os.Chmod("test/not_allowed", 0o700)
 		if err != nil {
 			t.Error(err)
 		}
@@ -73,7 +73,7 @@ func TestWriteTempFileFails(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 
-	if err := os.MkdirAll("test/not_allowed", 0700); err != nil {
+	if err := os.MkdirAll("test/not_allowed", 0o700); err != nil {
 		t.Error(err)
 	}
 	defer func() {
@@ -83,12 +83,12 @@ func TestWriteTempFileFails(t *testing.T) {
 		}
 	}()
 
-	err := os.Chmod("test/not_allowed", 0000)
+	err := os.Chmod("test/not_allowed", 0o000)
 	if err != nil {
 		t.Error(err)
 	}
 	defer func() {
-		err := os.Chmod("test/not_allowed", 0700)
+		err := os.Chmod("test/not_allowed", 0o700)
 		if err != nil {
 			t.Error(err)
 		}
@@ -118,7 +118,7 @@ func TestWriteTempFile(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 
-	if err := os.MkdirAll("test", 0700); err != nil {
+	if err := os.MkdirAll("test", 0o700); err != nil {
 		t.Error(err)
 	}
 	defer func() {
@@ -171,11 +171,11 @@ func TestLoadFileList(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 
-	if err := os.MkdirAll("test/not_allowed", 0700); err != nil {
+	if err := os.MkdirAll("test/not_allowed", 0o700); err != nil {
 		t.Error(err)
 	}
 
-	if err := os.MkdirAll("test/allowed_but_empty", 0700); err != nil {
+	if err := os.MkdirAll("test/allowed_but_empty", 0o700); err != nil {
 		t.Error(err)
 	}
 
@@ -201,12 +201,12 @@ func TestLoadFileList(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = os.Chmod("test/not_allowed", 0000)
+	err = os.Chmod("test/not_allowed", 0o000)
 	if err != nil {
 		t.Error(err)
 	}
 	defer func() {
-		err := os.Chmod("test/not_allowed", 0700)
+		err := os.Chmod("test/not_allowed", 0o700)
 		if err != nil {
 			t.Error(err)
 		}
@@ -239,11 +239,11 @@ func TestLoadFileListFails(t *testing.T) {
 	L.SetLevel(logmatic.LogLevel(42))
 	L.SetLevel(logmatic.FATAL)
 
-	if err := os.MkdirAll("test/not_allowed", 0700); err != nil {
+	if err := os.MkdirAll("test/not_allowed", 0o700); err != nil {
 		t.Error(err)
 	}
 
-	if err := os.MkdirAll("test/allowed_but_empty", 0700); err != nil {
+	if err := os.MkdirAll("test/allowed_but_empty", 0o700); err != nil {
 		t.Error(err)
 	}
 
@@ -269,12 +269,12 @@ func TestLoadFileListFails(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = os.Chmod("test/not_allowed", 0000)
+	err = os.Chmod("test/not_allowed", 0o000)
 	if err != nil {
 		t.Error(err)
 	}
 	defer func() {
-		err := os.Chmod("test/not_allowed", 0700)
+		err := os.Chmod("test/not_allowed", 0o700)
 		if err != nil {
 			t.Error(err)
 		}

@@ -11,7 +11,7 @@ import (
 	cli "github.com/jawher/mow.cli"
 	"github.com/mborders/logmatic"
 
-	"gitlab.com/poldi1405/bulkrename/plan"
+	"git.sr.ht/~poldi1405/bulkrename/plan"
 )
 
 var (

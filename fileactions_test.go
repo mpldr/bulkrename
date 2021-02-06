@@ -17,7 +17,7 @@ func TestRemoveInvalidEntries(t *testing.T) {
 		"test/not_allowed/permdenied",
 	}
 
-	if err := os.MkdirAll("test/not_allowed", 0700); err != nil {
+	if err := os.MkdirAll("test/not_allowed", 0o700); err != nil {
 		t.Error(err)
 	}
 
@@ -38,12 +38,12 @@ func TestRemoveInvalidEntries(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = os.Chmod("test/not_allowed", 0000)
+	err = os.Chmod("test/not_allowed", 0o000)
 	if err != nil {
 		t.Error(err)
 	}
 	defer func() {
-		err := os.Chmod("test/not_allowed", 0700)
+		err := os.Chmod("test/not_allowed", 0o700)
 		if err != nil {
 			t.Error(err)
 		}
