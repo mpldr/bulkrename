@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
+	j "git.sr.ht/~poldi1405/bulkrename/plan/jobdescriptor"
 	"github.com/mborders/logmatic"
-	j "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
 )
 
 // Plan stores all information on a rename-job. and provides related funtions.

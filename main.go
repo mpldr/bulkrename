@@ -3,6 +3,7 @@ package main
 
 import (
 	"bufio"
+	_ "embed"
 	"fmt"
 	"os"
 	"strconv"
@@ -27,6 +28,8 @@ var (
 	delem        *bool
 	files        *[]string
 	l            *logmatic.Logger
+	//go:embed licensetext.txt
+	licensetext []byte
 )
 
 func main() {
@@ -101,7 +104,7 @@ func main() {
 
 func setupCLI(br *cli.Cli) {
 	br.Version("v version", "bulkrename "+buildVersion)
-	br.Spec = "[-r] [-a] [-d] [--editor] [--arg...] [--check] [--no-mkdir] [--no-overwrite] [--loglevel] FILES..."
+	br.Spec = "[-r] [-a] [-d] [--editor] [--arg...] [--check] [--no-mkdir] [--no-overwrite] [--loglevel] [FILES...]"
 
 	recursive = br.Bool(cli.BoolOpt{
 		Name:   "r recursive",
@@ -164,6 +167,12 @@ func setupCLI(br *cli.Cli) {
 	files = br.Strings(cli.StringsArg{
 		Name: "FILES",
 		Desc: "the source files that will be added to the editor",
+	})
+
+	br.Command("licenses", "print license information", func(s *cli.Cmd) {
+		s.Action = func() {
+			fmt.Println(string(licensetext))
+		}
 	})
 }
 

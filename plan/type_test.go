@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	j "gitlab.com/poldi1405/bulkrename/plan/jobdescriptor"
+	j "git.sr.ht/~poldi1405/bulkrename/plan/jobdescriptor"
 )
 
 func TestExecuteRemove(t *testing.T) {
