@@ -30,6 +30,8 @@ var (
 	l            *logmatic.Logger
 	//go:embed licensetext.txt
 	licensetext []byte
+	//go:embed LICENSE
+	mpl []byte
 )
 
 func main() {
@@ -171,6 +173,7 @@ func setupCLI(br *cli.Cli) {
 
 	br.Command("licenses", "print license information", func(s *cli.Cmd) {
 		s.Action = func() {
+			fmt.Println(string(mpl))
 			fmt.Println(string(licensetext))
 		}
 	})

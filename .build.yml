@@ -1,0 +1,18 @@
+image: archlinux
+packages:
+  - go
+  - asciidoc
+  - libxslt
+sources:
+  - https://git.sr.ht/~poldi1405/bulkrename
+artifacts:
+  - br_linux_amd64
+  - br_windows_amd64.exe
+  - br_darwin_amd64
+tasks:
+  - build: |
+      cd bulkrename
+      make ci
+  - test: |
+      cd bulkrename
+      go test -v -cover -race .
