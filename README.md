@@ -6,6 +6,10 @@
 
 [![Go Report Card](https://goreportcard.com/badge/gitlab.com/poldi1405/bulkrename)](https://goreportcard.com/report/gitlab.com/poldi1405/bulkrename)
 
+[Report a bug](https://todo.sr.ht/~poldi1405/issues/?title=bulkrename:%20&description=**Type%3A**+BUG%0A%0A**Version%3A**+%0A%0A%3C!--+insert+description+here+--%3E)
+or
+[Request a feature](https://todo.sr.ht/~poldi1405/issues/?title=bulkrename:%20&description=**Type%3A**+Feature+Request%0A%0A**Version%3A**+%0A%0A%3C!--+insert+description+here+--%3E)
+
 ## Installation
 
 ```
