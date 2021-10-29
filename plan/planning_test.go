@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	j "git.sr.ht/~poldi1405/bulkrename/plan/jobdescriptor"
 	"github.com/mborders/logmatic"
+	j "mpldr.codes/br/plan/jobdescriptor"
 )
 
 func TestTempFileRemoved(t *testing.T) {

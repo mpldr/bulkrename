@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	j "git.sr.ht/~poldi1405/bulkrename/plan/jobdescriptor"
+	j "mpldr.codes/br/plan/jobdescriptor"
 )
 
 func TestExecuteRemove(t *testing.T) {

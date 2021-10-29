@@ -6,9 +6,9 @@ packages:
 sources:
   - https://git.sr.ht/~poldi1405/bulkrename
 artifacts:
-  - br_linux_amd64
-  - br_windows_amd64.exe
-  - br_darwin_amd64
+  - bulkrename/br_linux_amd64
+  - bulkrename/br_windows_amd64.exe
+  - bulkrename/br_darwin_amd64
 tasks:
   - build: |
       cd bulkrename
