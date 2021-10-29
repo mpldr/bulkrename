@@ -107,7 +107,7 @@ func main() {
 
 func setupCLI(br *cli.Cli) {
 	br.Version("v version", "bulkrename "+buildVersion)
-	br.Spec = "[-r] [-a] [-d] [--editor] [--arg...] [--check] [--no-mkdir] [--no-overwrite] [--loglevel] [FILES...]"
+	br.Spec = "[-r] [-a] [-d] [--macro | --editor --arg...] [--check] [--no-mkdir] [--no-overwrite] [--loglevel] [FILES...]"
 
 	recursive = br.Bool(cli.BoolOpt{
 		Name:   "r recursive",
@@ -152,6 +152,12 @@ func setupCLI(br *cli.Cli) {
 		Name:  "loglevel",
 		Desc:  "set the loglevel",
 		Value: "warn",
+	})
+
+	macro = br.String(cli.StringOpt{
+		Name:   "macro",
+		Desc:   "prepared macro to apply to the file",
+		EnvVar: "MACRO",
 	})
 
 	editor = br.String(cli.StringOpt{
