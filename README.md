@@ -13,7 +13,7 @@ or
 ## Installation
 
 ```
-go get -u -v git.sr.ht/~poldi1405/bulkrename
+go install mpldr.codes/br
 ```
 
 ## Usage

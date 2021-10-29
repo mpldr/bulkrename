@@ -12,7 +12,7 @@ import (
 	cli "github.com/jawher/mow.cli"
 	"github.com/mborders/logmatic"
 
-	"git.sr.ht/~poldi1405/bulkrename/plan"
+	"mpldr.codes/br/plan"
 )
 
 var (
@@ -21,6 +21,7 @@ var (
 	recursive    *bool
 	check        *bool
 	mkdir        bool
+	macro        *string
 	editor       *string
 	loglevel     *string
 	args         *[]string

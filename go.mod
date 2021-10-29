@@ -1,4 +1,4 @@
-module git.sr.ht/~poldi1405/bulkrename
+module mpldr.codes/br
 
 go 1.16
 
