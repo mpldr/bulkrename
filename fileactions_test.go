@@ -4,13 +4,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mborders/logmatic"
+	"git.sr.ht/~poldi1405/glog"
 )
 
 func TestRemoveInvalidEntries(t *testing.T) {
-	l = logmatic.NewLogger()
-	l.SetLevel(logmatic.LogLevel(42))
-	l.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	filelist := []string{
 		"test/ok",
 		"test/noexist&/&%",

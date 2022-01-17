@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	cli "github.com/jawher/mow.cli"
-	"github.com/mborders/logmatic"
 
 	"mpldr.codes/br/plan"
+	"git.sr.ht/~poldi1405/glog"
 )
 
 var (
@@ -28,7 +28,6 @@ var (
 	overwrite    bool
 	delem        *bool
 	files        *[]string
-	l            *logmatic.Logger
 	//go:embed licensetext.txt
 	licensetext []byte
 	//go:embed LICENSE
@@ -37,36 +36,29 @@ var (
 
 func main() {
 	br := cli.App("br", "Rename files in a bulk")
-	l = logmatic.NewLogger()
-
-	l.SetLevel(setupLogging())
 
 	setupCLI(br)
 
 	br.Action = func() {
-		l.SetLevel(setupLogging())
-
-		plan.L = l
-
-		l.Info("setting up plan")
+		glog.Info("setting up plan")
 		jobplan := plan.NewPlan()
 		setJobplanSettings(jobplan)
 
-		l.Info("cleaning input")
+		glog.Info("cleaning input")
 		*files = RemoveInvalidEntries(*files)
-		l.Info("loading filelist")
+		glog.Info("loading filelist")
 		jobplan.LoadFileList(*files, *recursive)
-		l.Info("starting editor")
+		glog.Info("starting editor")
 		err := jobplan.StartEditing()
 		if err != nil {
-			l.Info(err.Error())
-			l.Fatal("error occurred when editing")
+			glog.Info(err.Error())
+			glog.Fatal("error occurred when editing")
 		}
 
 		err = jobplan.PrepareExecution()
 		if err != nil {
-			l.Info(err.Error())
-			l.Fatal("error occurred when preparing execution")
+			glog.Info(err.Error())
+			glog.Fatal("error occurred when preparing execution")
 		}
 
 		if jobplan.StopToShow {
@@ -86,11 +78,11 @@ func main() {
 
 		errOcc, msgs, errs := jobplan.Execute()
 		if errOcc {
-			l.Error("Errors occurred while executing the plan")
+			glog.Error("Errors occurred while executing the plan")
 
 			for i, msg := range msgs {
-				l.Info(msg)
-				l.Info(errs[i].Error())
+				glog.Info(msg)
+				glog.Info(errs[i].Error())
 			}
 			os.Exit(1)
 		}
@@ -100,8 +92,8 @@ func main() {
 	}
 	err := br.Run(os.Args)
 	if err != nil {
-		l.Info(err.Error())
-		l.Fatal("unable to execute")
+		glog.Error(err)
+		glog.Fatal("unable to execute")
 	}
 }
 
@@ -186,55 +178,19 @@ func setupCLI(br *cli.Cli) {
 	})
 }
 
-func setupLogging() logmatic.LogLevel {
-	trace := os.Getenv("BR_ENABLE_TRACE")
-	if len(trace) > 0 {
-		l.Debug("LogLevel set to TRACE")
-		return logmatic.TRACE
-	}
-	if loglevel == nil || *loglevel == "" {
-		return logmatic.WARN
-	}
-
-	switch *loglevel {
-	case "trace":
-		l.Debug("Set LogLevel to TRACE")
-		return logmatic.TRACE
-
-	case "debug":
-		l.Debug("Set LogLevel to DEBUG")
-		return logmatic.DEBUG
-
-	case "info":
-		l.Debug("Set LogLevel to INFO")
-		return logmatic.INFO
-
-	case "error":
-		l.Debug("Set LogLevel to ERROR")
-		return logmatic.ERROR
-
-	case "fatal":
-		l.Debug("Set LogLevel to FATAL")
-		return logmatic.FATAL
-	default:
-		l.Debug("Set LogLevel to WARN")
-		return logmatic.WARN
-	}
-}
-
 func setJobplanSettings(jobplan *plan.Plan) {
 	jobplan.AbsolutePaths = *absolute
-	l.Debug("set AbsolutePaths to " + strconv.FormatBool(*absolute))
+	glog.Debug("set AbsolutePaths to " + strconv.FormatBool(*absolute))
 	jobplan.Overwrite = overwrite
-	l.Debug("set Overwrite to " + strconv.FormatBool(overwrite))
+	glog.Debug("set Overwrite to " + strconv.FormatBool(overwrite))
 	jobplan.Editor = *editor
-	l.Debug("set Editor to " + *editor)
+	glog.Debug("set Editor to " + *editor)
 	jobplan.EditorArgs = *args
-	l.Debug("set EditorArgs to " + strings.Join(*args, ", "))
+	glog.Debug("set EditorArgs to " + strings.Join(*args, ", "))
 	jobplan.CreateDirs = mkdir
-	l.Debug("set CreateDirs to " + strconv.FormatBool(mkdir))
+	glog.Debug("set CreateDirs to " + strconv.FormatBool(mkdir))
 	jobplan.StopToShow = *check
-	l.Debug("set StopToShow to " + strconv.FormatBool(*check))
+	glog.Debug("set StopToShow to " + strconv.FormatBool(*check))
 	jobplan.DeleteEmpty = *delem
-	l.Debug("set DeleteEmpty to " + strconv.FormatBool(*delem))
+	glog.Debug("set DeleteEmpty to " + strconv.FormatBool(*delem))
 }

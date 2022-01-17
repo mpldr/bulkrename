@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mborders/logmatic"
 	j "mpldr.codes/br/plan/jobdescriptor"
 )
 
@@ -41,9 +40,6 @@ type Plan struct {
 	// jobs contains the tasks that have to be executed in order for the target state to be reached
 	jobs []j.JobDescriptor
 }
-
-// L contains the Logger used to log stuff
-var L *logmatic.Logger
 
 // NewPlan returns a pointer to a new Plan
 func NewPlan() *Plan {

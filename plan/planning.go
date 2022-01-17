@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"git.sr.ht/~poldi1405/glog"
 	"git.sr.ht/~poldi1405/go-ansi"
 	j "mpldr.codes/br/plan/jobdescriptor"
 )
@@ -20,9 +21,9 @@ import (
 func (p *Plan) CreatePlan(planfile string) error {
 	f, err := os.Open(planfile)
 	if err != nil {
-		L.Error("Unable to open temporary file")
-		L.Trace("Path:" + planfile)
-		L.Info("Error:" + err.Error())
+		glog.Error("Unable to open temporary file")
+		glog.Trace("Path:" + planfile)
+		glog.Info("Error:" + err.Error())
 		return err
 	}
 	defer f.Close()
@@ -32,14 +33,14 @@ func (p *Plan) CreatePlan(planfile string) error {
 
 	for scanner.Scan() {
 		scan := scanner.Text()
-		L.Debug("Read " + scan)
+		glog.Debug("Read " + scan)
 		var path string
 		if scan != "" {
 			path, err = filepath.Abs(scan)
 			if err != nil {
-				L.Error("Unable to get absolute path")
-				L.Trace("Path:" + scan)
-				L.Info("Error:" + err.Error())
+				glog.Error("Unable to get absolute path")
+				glog.Trace("Path:" + scan)
+				glog.Info("Error:" + err.Error())
 				return err
 			}
 		}
@@ -64,31 +65,31 @@ func (p *Plan) CreatePlan(planfile string) error {
 func (p *Plan) PrepareExecution() error {
 	assumeExisting := make(map[string]bool)
 
-	L.Debug("checking for circular file-movement")
+	glog.Debug("checking for circular file-movement")
 	prerules := p.findCollisions()
 
 	for _, job := range p.jobs {
-		L.Debug("From: " + job.SourcePath)
-		L.Debug("To  : " + job.DstPath)
+		glog.Debug("From: " + job.SourcePath)
+		glog.Debug("To  : " + job.DstPath)
 		if job.Action == 3 { // this file was moved by the ringdetection
-			L.Debug("ignoring this job, it was generated as collision prevention")
+			glog.Debug("ignoring this job, it was generated as collision prevention")
 			continue
 		}
 		f, err := os.Open(job.SourcePath)
 		if err != nil {
 			f.Close()
-			L.Error("Cannot access sourcefile")
-			L.Trace("Path:" + job.SourcePath)
-			L.Info("Error:" + err.Error())
+			glog.Error("Cannot access sourcefile")
+			glog.Trace("Path:" + job.SourcePath)
+			glog.Info("Error:" + err.Error())
 			return err
 		}
 
 		fi, err := f.Stat()
 		f.Close()
 		if err != nil {
-			L.Error("Cannot stat sourcefile")
-			L.Trace("Path:" + job.SourcePath)
-			L.Info("Error:" + err.Error())
+			glog.Error("Cannot stat sourcefile")
+			glog.Trace("Path:" + job.SourcePath)
+			glog.Info("Error:" + err.Error())
 			return err
 		}
 
@@ -120,17 +121,17 @@ func (p *Plan) PrepareExecution() error {
 			if os.IsNotExist(err) && p.CreateDirs {
 				prerules = append(prerules, j.JobDescriptor{Action: 2, DstPath: dst})
 			} else if os.IsNotExist(err) {
-				L.Error("Destination does not exist")
-				L.Trace("Destination:" + dst)
-				L.Info("Error:" + err.Error())
+				glog.Error("Destination does not exist")
+				glog.Trace("Destination:" + dst)
+				glog.Info("Error:" + err.Error())
 				return errDirCreationNotAllowed
 			} else if err != nil {
-				L.Error("There is an issue with the destination directory")
-				L.Trace("Destination:" + dst)
-				L.Info("Error:" + err.Error())
+				glog.Error("There is an issue with the destination directory")
+				glog.Trace("Destination:" + dst)
+				glog.Info("Error:" + err.Error())
 				return err
 			}
-			L.Debug("assume that " + dst + " does exist from now on")
+			glog.Debug("assume that " + dst + " does exist from now on")
 			assumeExisting[dst] = true
 		}
 	}
@@ -144,14 +145,14 @@ func (p *Plan) findCollisions() []j.JobDescriptor {
 
 	destinations := make(map[string]struct{})
 
-	L.Debug("setting up map of destinationpaths")
+	glog.Debug("setting up map of destinationpaths")
 	for _, j := range p.jobs {
 		destinations[j.DstPath] = struct{}{}
 	}
 
 	for i := range p.jobs {
-		L.Debug("From: " + p.jobs[i].SourcePath)
-		L.Debug("To  : " + p.jobs[i].DstPath)
+		glog.Debug("From: " + p.jobs[i].SourcePath)
+		glog.Debug("To  : " + p.jobs[i].DstPath)
 		_, match := destinations[p.jobs[i].SourcePath]
 		if match { // this sourcefile is also a destination
 			rand.Seed(time.Now().UnixNano())
@@ -163,7 +164,7 @@ func (p *Plan) findCollisions() []j.JobDescriptor {
 					break
 				}
 			}
-			L.Debug("Collision found, moving from " + p.jobs[i].SourcePath + " to " + safePath)
+			glog.Debug("Collision found, moving from " + p.jobs[i].SourcePath + " to " + safePath)
 
 			moveToSafety := j.JobDescriptor{
 				Action:     1,

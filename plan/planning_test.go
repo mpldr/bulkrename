@@ -4,14 +4,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mborders/logmatic"
+	"git.sr.ht/~poldi1405/glog"
 	j "mpldr.codes/br/plan/jobdescriptor"
 )
 
 func TestTempFileRemoved(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 
 	err := p.CreatePlan("probably does not exist. If it does, delete it.")
@@ -25,9 +23,7 @@ func TestTempFileRemoved(t *testing.T) {
 }
 
 func TestDetectCircles(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 
 	p.InFiles = []string{"1", "2", "3"}
@@ -57,9 +53,7 @@ func TestDetectCircles(t *testing.T) {
 }
 
 func TestDetectLinearReplace(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 
 	p.InFiles = []string{"1", "2", "3"}
@@ -89,9 +83,7 @@ func TestDetectLinearReplace(t *testing.T) {
 }
 
 func TestDetectNoCircles(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 
 	p.InFiles = []string{"1", "2", "3"}
@@ -191,9 +183,7 @@ func TestDeleteEmptyLines(t *testing.T) {
 }
 
 func TestNoUnnecessaryPrerules(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 
 	p.InFiles = []string{"1"}
@@ -223,9 +213,7 @@ func TestNoUnnecessaryPrerules(t *testing.T) {
 }
 
 func TestFailBecauseActionForbidden(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 	reset := func() {
 		p.InFiles = []string{"1"}
@@ -282,9 +270,7 @@ func TestFailBecauseActionForbidden(t *testing.T) {
 }
 
 func TestFailBecauseMkdirForbidden(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 	reset := func() {
 		p.InFiles = []string{"1"}
@@ -314,9 +300,7 @@ func TestFailBecauseMkdirForbidden(t *testing.T) {
 }
 
 func TestCreateMkdirPrerule(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 	reset := func() {
 		p.InFiles = []string{"1"}
@@ -350,9 +334,7 @@ func TestCreateMkdirPrerule(t *testing.T) {
 }
 
 func TestReplaceFileWithDirectoryPrerules(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 	reset := func() {
 		p.InFiles = []string{"1"}
@@ -392,9 +374,7 @@ func TestReplaceFileWithDirectoryPrerules(t *testing.T) {
 }
 
 func TestIgnoreRingDetectionRules(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 	reset := func() {
 		p.InFiles = []string{"1"}
@@ -434,9 +414,7 @@ func TestIgnoreRingDetectionRules(t *testing.T) {
 }
 
 func TestPlanningSourceFileNotExist(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 	reset := func() {
 		p.InFiles = []string{"1"}
