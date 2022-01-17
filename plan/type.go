@@ -9,7 +9,6 @@ import (
 	"time"
 
 	j "git.sr.ht/~poldi1405/bulkrename/plan/jobdescriptor"
-	"github.com/mborders/logmatic"
 )
 
 // Plan stores all information on a rename-job. and provides related funtions.
@@ -41,9 +40,6 @@ type Plan struct {
 	// jobs contains the tasks that have to be executed in order for the target state to be reached
 	jobs []j.JobDescriptor
 }
-
-// L contains the Logger used to log stuff
-var L *logmatic.Logger
 
 // NewPlan returns a pointer to a new Plan
 func NewPlan() *Plan {

@@ -5,14 +5,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mborders/logmatic"
+	"git.sr.ht/~poldi1405/glog"
 )
 
 func TestRecursiveFileList(t *testing.T) {
 	var p Plan
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 
 	if err := os.MkdirAll("test/not_allowed", 0o700); err != nil {
 		t.Error(err)
@@ -69,9 +67,7 @@ func TestRecursiveFileList(t *testing.T) {
 
 func TestWriteTempFileFails(t *testing.T) {
 	var p Plan
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 
 	if err := os.MkdirAll("test/not_allowed", 0o700); err != nil {
 		t.Error(err)
@@ -114,9 +110,7 @@ func TestWriteTempFileFails(t *testing.T) {
 
 func TestWriteTempFile(t *testing.T) {
 	var p Plan
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 
 	if err := os.MkdirAll("test", 0o700); err != nil {
 		t.Error(err)
@@ -167,9 +161,7 @@ func TestWriteTempFile(t *testing.T) {
 
 func TestLoadFileList(t *testing.T) {
 	var p Plan
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 
 	if err := os.MkdirAll("test/not_allowed", 0o700); err != nil {
 		t.Error(err)
@@ -235,9 +227,7 @@ func TestLoadFileList(t *testing.T) {
 
 func TestLoadFileListFails(t *testing.T) {
 	var p Plan
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 
 	if err := os.MkdirAll("test/not_allowed", 0o700); err != nil {
 		t.Error(err)

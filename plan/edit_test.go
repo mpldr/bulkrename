@@ -5,13 +5,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mborders/logmatic"
+	"git.sr.ht/~poldi1405/glog"
 )
 
 func TestPrepareArguments(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 	var p Plan
 	p.EditorArgs = []string{
 		"{}",
@@ -27,9 +25,7 @@ func TestPrepareArguments(t *testing.T) {
 }
 
 func TestEditEmpty(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 
 	p := NewPlan()
 	p.Editor = "true"
@@ -40,9 +36,7 @@ func TestEditEmpty(t *testing.T) {
 }
 
 func TestEditSuccess(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.SetLevel(logmatic.LogLevel(42))
-	L.SetLevel(logmatic.FATAL)
+	glog.SetLevel(glog.Level(42))
 
 	p := NewPlan()
 	p.Editor = "true"
@@ -54,9 +48,6 @@ func TestEditSuccess(t *testing.T) {
 }
 
 func TestEditFail(t *testing.T) {
-	L = logmatic.NewLogger()
-	L.ExitOnFatal = false
-
 	stdout := os.Stdout
 	defer func() { os.Stdout = stdout }()
 	os.Stdout = os.NewFile(0, os.DevNull)

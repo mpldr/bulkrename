@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+
+	"git.sr.ht/~poldi1405/glog"
 )
 
 // StartEditing launches the editor and loads the required file for editing
 func (p *Plan) StartEditing() error {
 	if len(p.InFiles) == 0 {
-		L.Info("No files for editing left, so no editing necessary")
+		glog.Info("No files for editing left, so no editing necessary")
 		return nil
 	}
 	err := p.writeTempFile()
@@ -27,10 +29,10 @@ func (p *Plan) StartEditing() error {
 
 	err = c.Run()
 	if err != nil {
-		L.Trace("Executable:" + p.Editor)
-		L.Trace("Arguments:" + fmt.Sprint(p.EditorArgs))
-		L.Info("Error:" + err.Error())
-		L.Fatal("Cannot start editor!")
+		glog.Trace("Executable:" + p.Editor)
+		glog.Trace("Arguments:" + fmt.Sprint(p.EditorArgs))
+		glog.Info("Error:" + err.Error())
+		glog.Fatal("Cannot start editor!")
 		return err
 	}
 
@@ -44,7 +46,7 @@ func (p *Plan) prepareArguments() {
 
 	for i, arg := range p.EditorArgs {
 		if val, found := replace[arg]; found {
-			L.Debug("Replacing " + p.EditorArgs[i] + " with " + val)
+			glog.Debug("Replacing " + p.EditorArgs[i] + " with " + val)
 			p.EditorArgs[i] = val
 		}
 	}
