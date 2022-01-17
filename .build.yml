@@ -1,8 +1,12 @@
 image: archlinux
 packages:
+  - git
   - go
   - asciidoc
   - libxslt
+secrets:
+  - a4a77b05-94e0-443c-9408-b2d81f7263fe
+  - b15309e0-8156-44c8-aa7c-58c0f0b7d503
 sources:
   - https://git.sr.ht/~poldi1405/bulkrename
 artifacts:
@@ -10,6 +14,10 @@ artifacts:
   - bulkrename/br_windows_amd64.exe
   - bulkrename/br_darwin_amd64
 tasks:
+  - mirror-to-github: |
+      git clone --mirror https://git.sr.ht/~poldi1405/bulkrename/
+      cd bulkrename.git
+      git push --mirror git@github.com:mpldr/bulkrename.git
   - build: |
       cd bulkrename
       make ci

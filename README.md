@@ -1,9 +1,5 @@
 # bulkrename
 
-[![codecov](https://codecov.io/gl/poldi1405/bulkrename/branch/develop/graph/badge.svg?token=656MXKJG7U)](https://codecov.io/gl/poldi1405/bulkrename/)
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=poldi1405_bulkrename&metric=alert_status)](https://sonarcloud.io/dashboard?id=poldi1405_bulkrename)
-
 [![Go Report Card](https://goreportcard.com/badge/gitlab.com/poldi1405/bulkrename)](https://goreportcard.com/report/gitlab.com/poldi1405/bulkrename)
 
 [Report a bug](https://todo.sr.ht/~poldi1405/issues/?title=bulkrename:%20&description=**Type%3A**+BUG%0A%0A**Version%3A**+%0A%0A%3C!--+insert+description+here+--%3E)
@@ -13,7 +9,7 @@ or
 ## Installation
 
 ```
-go install mpldr.codes/br
+go install mpldr.codes/br@latest
 ```
 
 ## Usage

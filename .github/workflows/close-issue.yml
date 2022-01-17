@@ -1,0 +1,15 @@
+on:
+  issues:
+    types: [opened]
+jobs:
+  titlePrefixCheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close Issue
+        uses: peter-evans/close-issue@v1
+        with:
+          comment: |
+              Hey there,
+  
+              it seems you have an issue. Unfortunately this is just a mirror of this project, and I will therefore not respond to any issues raised on GitHub. If you have an issue, please send an email to [~poldi1405/issues@todo.sr.ht](mailto:~poldi1405/issues@todo.sr.ht) in order to create a ticket in our issue tracker over [at sourcehut](https://todo.sr.ht/~poldi1405/issues). You do not need an account in order to participate.
+
